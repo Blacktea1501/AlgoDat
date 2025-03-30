@@ -99,12 +99,24 @@ public class SortedArrayDictionary<K extends Comparable<? super K>, V> implement
         return this.data.length;
     }
 
-    public int getElementCount() {
-        return this.elements;
-    }
+//    public int getElementCount() {
+//        return this.elements;
+//    }
 
     @Override
     public Iterator<Entry<K, V>> iterator() {
-        return null;
+        return new Iterator<Entry<K, V>>() {
+            private int currentIndex = 0;
+
+            @Override
+            public boolean hasNext() {
+                return currentIndex < elements;
+            }
+
+            @Override
+            public Entry<K, V> next() {
+                return data[currentIndex++];
+            }
+        };
     }
 }
