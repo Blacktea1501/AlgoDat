@@ -10,12 +10,13 @@ public class SortedArrayDictionary<K extends Comparable<? super K>, V> implement
 
     // Das Array ist ein Array von Dictionaries, um die Einträge zu speichern
     private Entry<K, V>[] data;
-    private int elements;
+    private int size;
+    private static final char CAPACITY = 8;
 
 
     public SortedArrayDictionary() {
-        this.elements = 0;
-        this.data = new Entry[10];
+        this.size = 0;
+        this.data = new Entry[CAPACITY];
     }
 
     @Override
@@ -30,14 +31,14 @@ public class SortedArrayDictionary<K extends Comparable<? super K>, V> implement
         }
 
         // new key insert
-        if (this.elements == this.data.length) {
+        if (this.size == this.data.length) {
             // resize array
             Entry<K, V>[] newData = new Entry[this.data.length * 2];
             System.arraycopy(this.data, 0, newData, 0, this.data.length);
             this.data = newData;
         }
 
-        int j = this.elements - 1;
+        int j = this.size - 1;
 
         while (j >= 0 && this.data[j].getKey().compareTo(key) > 0) {
             this.data[j + 1] = this.data[j];
@@ -45,7 +46,7 @@ public class SortedArrayDictionary<K extends Comparable<? super K>, V> implement
         }
 
         this.data[j + 1] = new Entry<>(key, value);
-        this.elements++;
+        this.size++;
 
         return null;
     }
@@ -54,7 +55,7 @@ public class SortedArrayDictionary<K extends Comparable<? super K>, V> implement
     @Override
     public V search(K key) {
         int low = 0;
-        int high = this.elements - 1;
+        int high = this.size - 1;
 
         while (low <= high) {
             int mid = (low + high) / 2;
@@ -74,7 +75,7 @@ public class SortedArrayDictionary<K extends Comparable<? super K>, V> implement
     // binary search for key
     private int searchKey(K key) {
         int low = 0;
-        int high = this.elements - 1;
+        int high = this.size - 1;
 
         while (low <= high) {
             int mid = (low + high) / 2;
@@ -91,17 +92,28 @@ public class SortedArrayDictionary<K extends Comparable<? super K>, V> implement
 
     @Override
     public V remove(K key) {
-        return null;
+        int i = searchKey(key);
+
+        if (i == -1) {
+            // key not found
+            return null;
+        } else {
+            V value = this.data[i].getValue();
+            // shift elements to the left
+            for (int j = i; j < this.size - 1; j++) {
+                this.data[j] = this.data[j + 1];
+            }
+            this.data[this.size - 1] = null;
+            this.size--;
+            return value;
+        }
     }
 
     @Override
+    // returns how many entries are in the Array
     public int size() {
-        return this.data.length;
+        return this.size;
     }
-
-//    public int getElementCount() {
-//        return this.elements;
-//    }
 
     @Override
     public Iterator<Entry<K, V>> iterator() {
@@ -110,7 +122,7 @@ public class SortedArrayDictionary<K extends Comparable<? super K>, V> implement
 
             @Override
             public boolean hasNext() {
-                return currentIndex < elements;
+                return currentIndex < size;
             }
 
             @Override
