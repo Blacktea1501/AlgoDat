@@ -6,6 +6,7 @@ import java.util.Iterator;
 // die Datensätze lückenlos und sortiert gespeichert werden. Für die Suche wird binäre Suche
 // eingesetzt
 
+@SuppressWarnings("unchecked")
 public class SortedArrayDictionary<K extends Comparable<? super K>, V> implements Dictionary<K, V> {
 
     // Das Array ist ein Array von Dictionaries, um die Einträge zu speichern
@@ -115,9 +116,27 @@ public class SortedArrayDictionary<K extends Comparable<? super K>, V> implement
         return this.size;
     }
 
+    public Entry<K, V> get(int index) {
+        if (index < 0 || index >= this.size) {
+            throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + this.size);
+        }
+        return this.data[index];
+    }
+
+    @Override
+    public String toString(){
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < this.size; i++) {
+            sb.append(this.data[i].getKey()).append(": ").append(this.data[i].getValue()).append("\n");
+        }
+        return sb.toString();
+    }
+
+
+
     @Override
     public Iterator<Entry<K, V>> iterator() {
-        return new Iterator<Entry<K, V>>() {
+        return new Iterator<>() {
             private int currentIndex = 0;
 
             @Override

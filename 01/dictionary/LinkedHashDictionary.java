@@ -3,7 +3,7 @@ package dictionary;
 import java.util.Hashtable;
 import java.util.Iterator;
 
-public class LinkedHashDictionary<K, V> implements Dictionary<K, V>{
+public class LinkedHashDictionary<K extends Comparable<? super K>, V> implements Dictionary<K, V>{
 
 //    LinkedHashDictionary verwendet als Implementierung eine Hashtabelle mit linear verketteten
 //    Listen. Achten Sie darauf, dass die Größe der Hashtabelle eine Primzahl ist. Wird ein bestimmter
