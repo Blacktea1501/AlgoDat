@@ -216,6 +216,12 @@ public class TUI {
                 }
 
                 String[] parts = input.split(" ");
+
+                if(parts.length != 2) {
+                    System.out.println("Invalid delete command");
+                    continue;
+                }
+
                 String key = parts[1];
                 System.out.println("Delete " + key);
             }
