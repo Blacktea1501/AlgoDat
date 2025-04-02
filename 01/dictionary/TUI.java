@@ -110,10 +110,12 @@ public class TUI {
             // check if input is create
             if(input.startsWith("create")) {
                 String[] parts = input.split(" ");
+
                 if(parts.length != 3) {
                     System.out.println("Invalid create command");
                     continue;
                 }
+
                 String type = parts[2];
 
                 switch(type) {
@@ -168,6 +170,12 @@ public class TUI {
                 }
 
                 String[] parts = input.split(" ");
+
+                if(parts.length != 2) {
+                    System.out.println("Invalid search command");
+                    continue;
+                }
+
                 String key = parts[1];
                 System.out.println("Search for " + key);
                 String value = dictionary.search(key);
@@ -187,6 +195,12 @@ public class TUI {
                 }
 
                 String[] parts = input.split(" ");
+
+                if(parts.length != 3) {
+                    System.out.println("Invalid insert command");
+                    continue;
+                }
+
                 String key = parts[1];
                 String value = parts[2];
                 System.out.println("Insert " + key + " " + value);
