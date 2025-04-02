@@ -6,7 +6,7 @@ import java.util.Scanner;
 import java.io.BufferedReader;
 import java.io.FileReader;
 
-public class SortedArrayDictionaryTUI {
+public class TUI {
 
     // read method
     public void read(String command, dictionary.Dictionary<String, String> output){
@@ -20,7 +20,7 @@ public class SortedArrayDictionaryTUI {
 
         if (c.length == 3) {
             if(!c[1].matches("[0-9]+")) {
-                System.out.println("n has to be a number");
+                System.out.println("[n] has to be a number");
                 return;
             }
             n = Integer.parseInt(c[1]);
@@ -77,8 +77,8 @@ public class SortedArrayDictionaryTUI {
         System.out.println("Type 'help' to get a list of all commands");
 
         Scanner scanner = new Scanner(System.in);
-        SortedArrayDictionary<String, String> dictionary = new SortedArrayDictionary<>();
-        SortedArrayDictionaryTUI tui = new SortedArrayDictionaryTUI();
+        Dictionary <String, String> dictionary = null;
+        TUI tui = new TUI();
 
         while(true) {
             // read in command
@@ -108,26 +108,65 @@ public class SortedArrayDictionaryTUI {
             }
 
             // check if input is create
-            // TODO: implementation of all dictionary types
             if(input.startsWith("create")) {
-                System.out.println("SortedArrayDictionary created");
+                String[] parts = input.split(" ");
+                if(parts.length != 3) {
+                    System.out.println("Invalid create command");
+                    continue;
+                }
+                String type = parts[2];
+
+                switch(type) {
+                    case "SortedArrayDictionary":
+                        dictionary = new SortedArrayDictionary<>();
+                        System.out.println("Created new SortedArrayDictionary");
+                        break;
+                    case "LinkedHashDictionary":
+                        // create new LinkedHashDictionary
+                        break;
+                    case "OpenHashDictionary":
+                        // create new OpenHashDictionary
+                        break;
+                    case "BinaryTreeDictionary":
+                        // create new BinaryTreeDictionary
+                        break;
+                    default:
+                        dictionary = new SortedArrayDictionary<>();
+                        System.out.println("Created new SortedArrayDictionary by default");
+                        System.out.println("Invalid dictionary type");
+                }
+
                 continue;
             }
 
             // check if input is read
             if(input.startsWith("r")) {
+                if (dictionary == null) {
+                    System.out.println("No dictionary created");
+                    continue;
+                }
                 tui.read(input, dictionary);
                 continue;
             }
 
             // check if input is print
             if(input.equals("p")) {
+                if (dictionary == null) {
+                    System.out.println("No dictionary created");
+                    continue;
+                }
                 System.out.println(dictionary);
                 continue;
             }
 
             // check if input is search
             if(input.startsWith("s")) {
+
+               if (dictionary == null) {
+                    System.out.println("No dictionary created");
+                    continue;
+                }
+
                 String[] parts = input.split(" ");
                 String key = parts[1];
                 System.out.println("Search for " + key);
@@ -142,6 +181,11 @@ public class SortedArrayDictionaryTUI {
 
             // check if input is insert
             if(input.startsWith("i")) {
+                if (dictionary == null) {
+                    System.out.println("No dictionary created");
+                    continue;
+                }
+
                 String[] parts = input.split(" ");
                 String key = parts[1];
                 String value = parts[2];
@@ -151,6 +195,12 @@ public class SortedArrayDictionaryTUI {
 
             // check if input is delete
             if(input.startsWith("d")) {
+
+                if (dictionary == null) {
+                    System.out.println("No dictionary created");
+                    continue;
+                }
+
                 String[] parts = input.split(" ");
                 String key = parts[1];
                 System.out.println("Delete " + key);
