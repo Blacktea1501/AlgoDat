@@ -12,7 +12,7 @@ public class SortedArrayDictionary<K extends Comparable<? super K>, V> implement
     // Das Array ist ein Array von Dictionaries, um die Einträge zu speichern
     private Entry<K, V>[] data;
     private int size;
-    private static final char CAPACITY = 8;
+    private static final char CAPACITY = 16000;
 
 
     public SortedArrayDictionary() {

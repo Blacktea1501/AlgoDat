@@ -6,6 +6,13 @@
  */
 package dictionary;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+
 /**
  * Static test methods for different Dictionary implementations.
  * @author oliverbittel
@@ -25,13 +32,18 @@ public class DictionaryTest {
 	}
 
 	private static void cpuTime() {
+		Dictionary<String, String> dict = new SortedArrayDictionary<>();
 
-		long start = System.nanoTime();
-		DictionaryTest.testSortedArrayDictionary();
-		long end = System.nanoTime();
-		System.out.println("CPU time for SortedArrayDictionary: " + (end - start) + " nanoseconds");
+		ArrayList<String> lines = readFile("01/dictionary/dtengl.txt");
 
-		// ...
+		// test for all lines
+		insertTest(lines, dict, lines.size());
+		searchTest(lines, dict, lines.size());
+
+		// test for first 8000 lines
+		dict = new SortedArrayDictionary<>();
+		insertTest(lines, dict, 8000);
+		searchTest(lines, dict, 8000);
 	}
 
 	private static void testSortedArrayDictionary() {
@@ -101,7 +113,71 @@ public class DictionaryTest {
 			System.out.println(e.getKey() + ": " + e.getValue());
 		}
     }
-	
+
+	private static ArrayList<String> readFile(String filename) {
+		ArrayList<String> lines = new ArrayList<>();
+
+		try{
+			BufferedReader br = new BufferedReader(new FileReader(filename));
+			String line;
+
+			while ((line = br.readLine()) != null) {
+				lines.add(line);
+			}
+		} catch (Exception e) {
+			System.out.println("Error reading file: " + e.getMessage());
+		}
+
+        return lines;
+	}
+
+	private static void insertTest(ArrayList<String> lines, Dictionary<String, String> dict, int n) {
+		String [] german = new String[n];
+		String [] english = new String[n];
+
+		for  (int i = 0; i < n; i++) {
+			String[] parts = lines.get(i).split(" ");
+			if (parts.length == 2) {
+				german[i] = parts[0];
+				english[i] = parts[1];
+			}
+		}
+
+		long start = System.nanoTime();
+		for (int i = 0; i < n; i++) {
+			dict.insert(german[i], english[i]);
+		}
+		long end = System.nanoTime();
+		System.out.println("CPU time for insert into SortedArrayDictionary " + n + " entries: " + (end - start) + " nanoseconds");
+	}
+
+private static void searchTest(ArrayList<String> lines, Dictionary<String, String> dict, int n) {
+		String [] german = new String[n];
+		String [] english = new String[n];
+
+		for  (int i = 0; i < n; i++) {
+			String[] parts = lines.get(i).split(" ");
+			if (parts.length == 2) {
+				german[i] = parts[0];
+				english[i] = parts[1];
+			}
+		}
+
+		long start = System.nanoTime();
+		for (int i = 0; i < n; i++) {
+			dict.search(german[i]);
+		}
+		long end = System.nanoTime();
+		System.out.println("CPU time for successful search in SortedArrayDictionary " + n + " entries: " + (end - start) + " nanoseconds");
+
+		start = System.nanoTime();
+		for (int i = 0; i < n; i++) {
+			dict.search(english[i]);
+		}
+		end = System.nanoTime();
+		System.out.println("CPU time for failed search in SortedArrayDictionary " + n + " entries: " + (end - start) + " nanoseconds");
+}
+
 	private static void testDict(Dictionary<String, String> dict) {
 		System.out.println("===== New Test Case ========================");
 		System.out.println("test " + dict.getClass());

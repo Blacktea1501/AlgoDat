@@ -9,7 +9,7 @@ import java.io.FileReader;
 public class TUI {
 
     // read method
-    public void read(String command, dictionary.Dictionary<String, String> output){
+    public static void read(String command, dictionary.Dictionary<String, String> output){
         String[] c = command.split(" ");
         int n = 0;
 
