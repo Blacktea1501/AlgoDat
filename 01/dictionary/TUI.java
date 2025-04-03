@@ -203,6 +203,7 @@ public class TUI {
 
                 String key = parts[1];
                 String value = parts[2];
+                dictionary.insert(key, value);
                 System.out.println("Insert " + key + " " + value);
                 continue;
             }
