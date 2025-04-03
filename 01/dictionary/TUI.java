@@ -110,13 +110,17 @@ public class TUI {
             // check if input is create
             if(input.startsWith("create")) {
                 String[] parts = input.split(" ");
+                String type = "";
 
-                if(parts.length != 2) {
+                if(parts.length > 2) {
                     System.out.println("Invalid create command");
                     continue;
                 }
 
-                String type = parts[1];
+                if (parts.length == 2) {
+                    type = parts[1];
+                }
+
 
                 switch(type) {
                     case "SortedArrayDictionary":
