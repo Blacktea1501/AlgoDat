@@ -7,10 +7,7 @@
 package dictionary;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 /**
@@ -34,7 +31,7 @@ public class DictionaryTest {
 	private static void cpuTime() {
 		Dictionary<String, String> dict = new SortedArrayDictionary<>();
 
-		ArrayList<String> lines = readFile("dictionary/dtengl.txt");
+		ArrayList<String> lines = readFile("01/dictionary/dtengl.txt");
 
 		// test for all lines
 		insertTest(lines, dict, lines.size());

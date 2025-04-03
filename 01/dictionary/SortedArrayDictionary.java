@@ -60,12 +60,13 @@ public class SortedArrayDictionary<K extends Comparable<? super K>, V> implement
 
         while (low <= high) {
             int mid = (low + high) / 2;
-            if (this.data[mid].getKey().compareTo(key) == 0) {
-                return this.data[mid].getValue();
-            } else if (this.data[mid].getKey().compareTo(key) < 0) {
+            int comp = this.data[mid].getKey().compareTo(key);
+            if (comp < 0) {
                 low = mid + 1;
-            } else {
+            } else if (comp > 0) {
                 high = mid - 1;
+            } else {
+                return this.data[mid].getValue();
             }
         }
         // key not found
@@ -80,12 +81,14 @@ public class SortedArrayDictionary<K extends Comparable<? super K>, V> implement
 
         while (low <= high) {
             int mid = (low + high) / 2;
-            if (this.data[mid].getKey().compareTo(key) < 0) {
+            int comp = this.data[mid].getKey().compareTo(key);
+            if (comp < 0) {
                 high = mid - 1;
-            } else if (this.data[mid].getKey().compareTo(key) > 0) {
+            } else if (comp > 0) {
                 low = mid + 1;
-            } else
+            } else {
                 return mid;
+            }
         }
         // key not found
         return -1;
