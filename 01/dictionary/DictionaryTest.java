@@ -16,15 +16,21 @@ public class DictionaryTest {
 	 * @param args not used.
 	 */
 	public static void main(String[] args)  {
-		testSortedArrayDictionary();
-		testLinkedHashDictionary();
-		testOpenHashWithQuadraticProbingDictionary();
-		testBinaryTreeDictionary();
+//		testSortedArrayDictionary();
+//		testLinkedHashDictionary();
+//		testOpenHashWithQuadraticProbingDictionary();
+//		testBinaryTreeDictionary();
 
 		cpuTime();
 	}
 
 	private static void cpuTime() {
+
+		long start = System.nanoTime();
+		DictionaryTest.testSortedArrayDictionary();
+		long end = System.nanoTime();
+		System.out.println("CPU time for SortedArrayDictionary: " + (end - start) + " nanoseconds");
+
 		// ...
 	}
 
