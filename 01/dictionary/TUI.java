@@ -78,7 +78,6 @@ public class TUI {
 
         Scanner scanner = new Scanner(System.in);
         Dictionary <String, String> dictionary = null;
-        TUI tui = new TUI();
 
         while(true) {
             // read in command
@@ -150,7 +149,7 @@ public class TUI {
                     System.out.println("No dictionary created");
                     continue;
                 }
-                tui.read(input, dictionary);
+                read(input, dictionary);
                 continue;
             }
 
