@@ -111,22 +111,12 @@ public class TUI {
             if(input.startsWith("create")) {
                 String[] parts = input.split(" ");
 
-                if(parts.length != 3) {
+                if(parts.length != 1) {
                     System.out.println("Invalid create command");
                     continue;
                 }
 
-                String type = parts[2];
-
-                //String type;
-                //if (parts.length == 1){
-                //    type = "SortedArrayDictionary";
-                //} else if (parts.length != 2) {
-                //    System.out.println("Invalid create command");
-                //    continue;
-                //} else {
-                //    type = parts[1];
-                //}
+                String type = parts[1];
 
                 switch(type) {
                     case "SortedArrayDictionary":
@@ -234,6 +224,7 @@ public class TUI {
                 }
 
                 String key = parts[1];
+                dictionary.remove(key);
                 System.out.println("Delete " + key);
             }
         }
