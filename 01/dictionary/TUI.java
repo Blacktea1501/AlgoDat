@@ -118,6 +118,16 @@ public class TUI {
 
                 String type = parts[2];
 
+                //String type;
+                //if (parts.length == 1){
+                //    type = "SortedArrayDictionary";
+                //} else if (parts.length != 2) {
+                //    System.out.println("Invalid create command");
+                //    continue;
+                //} else {
+                //    type = parts[1];
+                //}
+
                 switch(type) {
                     case "SortedArrayDictionary":
                         dictionary = new SortedArrayDictionary<>();
