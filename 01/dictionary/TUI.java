@@ -135,7 +135,6 @@ public class TUI {
                     default:
                         dictionary = new SortedArrayDictionary<>();
                         System.out.println("Created new SortedArrayDictionary by default");
-                        System.out.println("Invalid dictionary type");
                 }
 
                 continue;
