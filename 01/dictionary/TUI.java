@@ -224,6 +224,7 @@ public class TUI {
                 }
 
                 String key = parts[1];
+                dictionary.remove(key);
                 System.out.println("Delete " + key);
             }
         }
