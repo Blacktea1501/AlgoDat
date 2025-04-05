@@ -12,7 +12,7 @@ public class SortedArrayDictionary<K extends Comparable<? super K>, V> implement
     // Das Array ist ein Array von Dictionaries, um die Einträge zu speichern
     private Entry<K, V>[] data;
     private int size;
-    private static final char CAPACITY = 16000;
+    private static final char CAPACITY = 16;
 
 
     public SortedArrayDictionary() {
@@ -22,10 +22,13 @@ public class SortedArrayDictionary<K extends Comparable<? super K>, V> implement
 
     @Override
     public V insert(K key, V value) {
+
+        // searchKey returns -1 if the key was not found,
+        // else it returns the index of the key
         int i = searchKey(key);
 
+        // if it's not -1, the key was found and update the value
         if(i != -1) {
-            // key already exists, update value
             V oldValue = this.data[i].getValue();
             this.data[i].setValue(value);
             return oldValue;
@@ -83,9 +86,9 @@ public class SortedArrayDictionary<K extends Comparable<? super K>, V> implement
             int mid = (low + high) / 2;
             int comp = this.data[mid].getKey().compareTo(key);
             if (comp < 0) {
-                high = mid - 1;
-            } else if (comp > 0) {
                 low = mid + 1;
+            } else if (comp > 0) {
+                high = mid - 1;
             } else {
                 return mid;
             }

@@ -20,12 +20,12 @@ public class DictionaryTest {
 	 * @param args not used.
 	 */
 	public static void main(String[] args)  {
-//		testSortedArrayDictionary();
+		testSortedArrayDictionary();
 //		testLinkedHashDictionary();
 //		testOpenHashWithQuadraticProbingDictionary();
 //		testBinaryTreeDictionary();
 
-		cpuTime();
+		 cpuTime();
 	}
 
 	private static void cpuTime() {
