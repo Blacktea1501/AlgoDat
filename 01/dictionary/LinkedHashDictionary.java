@@ -16,6 +16,12 @@ public class LinkedHashDictionary<K extends Comparable<? super K>, V> implements
     LinkedList<Entry<K, V>>[] tab;
     int size = 0;
 
+
+    public LinkedHashDictionary(int capacity) {
+        int newCapacity = isPrime(capacity) ? capacity : nextPrime(capacity);
+        this.tab = new LinkedList[newCapacity];
+    }
+
     @Override
     public V remove(K key) {
         var it = tab[hash(key)].iterator();
@@ -28,11 +34,6 @@ public class LinkedHashDictionary<K extends Comparable<? super K>, V> implements
             }
         }
         return null;
-    }
-
-    public LinkedHashDictionary(int capacity) {
-        int newCapacity = isPrime(capacity) ? capacity : nextPrime(capacity);
-        this.tab = new LinkedList[newCapacity];
     }
 
     private int nextPrime(int n) {

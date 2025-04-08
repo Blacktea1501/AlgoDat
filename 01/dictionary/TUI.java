@@ -139,6 +139,8 @@ public class TUI {
                         break;
                     case "OHD":
                     case "OpenHashDictionary":
+                        dictionary = new OpenHashDictionary<>(7);
+                        System.out.println("Created new OpenHashDictionary with default size 7");
                         // create new OpenHashDictionary
                         break;
                     case "BTD":
