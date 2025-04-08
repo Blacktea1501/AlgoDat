@@ -15,7 +15,6 @@ public class LinkedHashDictionary<K extends Comparable<? super K>, V> implements
 
     LinkedList<Entry<K, V>>[] tab;
     int size = 0;
-    final int loadFactor = 4;
 
     @Override
     public V remove(K key) {
@@ -73,7 +72,7 @@ public class LinkedHashDictionary<K extends Comparable<? super K>, V> implements
         int index = hash(key);
         if (tab[index] == null) {
             tab[index] = new LinkedList<>();
-        } else if (tab[index].size() >= loadFactor) {
+        } else if (2 <= size / tab.length) { // load factor bigger than 2
             resize();
             index = hash(key);
             tab[index] = new LinkedList<>();
