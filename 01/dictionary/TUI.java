@@ -92,6 +92,11 @@ public class TUI {
                 System.out.println("i deutsch englisch    - Insert key value pair");
                 System.out.println("d deutsch             - Delete key");
                 System.out.println("exit                  - Exit the program");
+                System.out.println("Available implementations:");
+                System.out.println("SortedArrayDictionary (SAD)");
+                System.out.println("LinkedHashDictionary (LHD)");
+                System.out.println("OpenHashDictionary (OHD)");
+                System.out.println("BinaryTreeDictionary (BTD)");
                 continue;
             }
 
@@ -122,17 +127,21 @@ public class TUI {
 
 
                 switch(type) {
+                    case "SAD":
                     case "SortedArrayDictionary":
                         dictionary = new SortedArrayDictionary<>();
                         System.out.println("Created new SortedArrayDictionary");
                         break;
+                    case "LHD":
                     case "LinkedHashDictionary":
                         dictionary = new LinkedHashDictionary<>(7);
                         System.out.println("Created new LinkedHashDictionary with default size 7");
                         break;
+                    case "OHD":
                     case "OpenHashDictionary":
                         // create new OpenHashDictionary
                         break;
+                    case "BTD":
                     case "BinaryTreeDictionary":
                         // create new BinaryTreeDictionary
                         break;
