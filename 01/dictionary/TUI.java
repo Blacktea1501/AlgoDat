@@ -127,7 +127,8 @@ public class TUI {
                         System.out.println("Created new SortedArrayDictionary");
                         break;
                     case "LinkedHashDictionary":
-                        // create new LinkedHashDictionary
+                        dictionary = new LinkedHashDictionary<>(7);
+                        System.out.println("Created new LinkedHashDictionary with default size 7");
                         break;
                     case "OpenHashDictionary":
                         // create new OpenHashDictionary

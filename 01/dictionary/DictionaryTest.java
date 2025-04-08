@@ -20,8 +20,8 @@ public class DictionaryTest {
 	 * @param args not used.
 	 */
 	public static void main(String[] args)  {
-		testSortedArrayDictionary();
-//		testLinkedHashDictionary();
+		// testSortedArrayDictionary();
+		testLinkedHashDictionary();
 //		testOpenHashWithQuadraticProbingDictionary();
 //		testBinaryTreeDictionary();
 
@@ -29,7 +29,8 @@ public class DictionaryTest {
 	}
 
 	private static void cpuTime() {
-		Dictionary<String, String> dict = new SortedArrayDictionary<>();
+		// Dictionary<String, String> dict = new SortedArrayDictionary<>();
+		Dictionary<String, String> dict = new LinkedHashDictionary<>(7);
 
 		ArrayList<String> lines = readFile("01/dictionary/dtengl.txt");
 
@@ -38,7 +39,8 @@ public class DictionaryTest {
 		searchTest(lines, dict, lines.size());
         System.out.println();
 		// test for first 8000 lines
-		dict = new SortedArrayDictionary<>();
+//		dict = new SortedArrayDictionary<>();
+		dict = new LinkedHashDictionary<>(7);
 		insertTest(lines, dict, 8000);
 		searchTest(lines, dict, 8000);
 	}
@@ -145,7 +147,7 @@ public class DictionaryTest {
 			dict.insert(german[i], english[i]);
 		}
 		long end = System.nanoTime();
-		System.out.println("CPU time for insert into SortedArrayDictionary " + n + " entries: " + ((end - start)/1000) + " microseconds");
+		System.out.println("CPU time for insert into " + dict.getClass() + " " + n + " entries: " + ((end - start)/1000) + " microseconds");
 	}
 
 private static void searchTest(ArrayList<String> lines, Dictionary<String, String> dict, int n) {
@@ -165,14 +167,14 @@ private static void searchTest(ArrayList<String> lines, Dictionary<String, Strin
 			dict.search(german[i]);
 		}
 		long end = System.nanoTime();
-		System.out.println("CPU time for successful search in SortedArrayDictionary " + n + " entries: " + ((end - start)/1000) + " microseconds");
+		System.out.println("CPU time for successful search in " + dict.getClass() + " " + n + " entries: " + ((end - start)/1000) + " microseconds");
 
 		start = System.nanoTime();
 		for (int i = 0; i < n; i++) {
 			dict.search(english[i]);
 		}
 		end = System.nanoTime();
-		System.out.println("CPU time for failed search in SortedArrayDictionary " + n + " entries: " + ((end - start)/1000) + " microseconds");
+		System.out.println("CPU time for failed search in " + dict.getClass() + " " + n + " entries: " + ((end - start)/1000) + " microseconds");
 }
 
 	private static void testDict(Dictionary<String, String> dict) {

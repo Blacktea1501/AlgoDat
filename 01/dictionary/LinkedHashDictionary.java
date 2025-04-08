@@ -1,6 +1,5 @@
 package dictionary;
 
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.NoSuchElementException;
@@ -17,7 +16,6 @@ public class LinkedHashDictionary<K extends Comparable<? super K>, V> implements
     LinkedList<Entry<K, V>>[] tab;
     int size = 0;
 
-
     @Override
     public V remove(K key) {
         var it = tab[hash(key)].iterator();
@@ -25,7 +23,7 @@ public class LinkedHashDictionary<K extends Comparable<? super K>, V> implements
             Entry<K,V> e = it.next();
             if (e.getKey().equals(key)) {
                 it.remove();
-                size--;
+                this.size--;
                 return e.getValue();
             }
         }
@@ -67,17 +65,69 @@ public class LinkedHashDictionary<K extends Comparable<? super K>, V> implements
 
     @Override
     public V insert(K key, V value) {
+        if (key == null || value == null) {
+            throw new IllegalArgumentException("Key and value must not be null");
+        }
+        if (size >= tab.length) {
+            resize();
+        }
+
+        int index = hash(key);
+        if (tab[index] == null) {
+            tab[index] = new LinkedList<>();
+        }
+
+        for (Entry<K, V> e : tab[index]) {
+            // replace value if key already exists and return old value
+            if (e.getKey().equals(key)) {
+                V oldValue = e.getValue();
+                e.setValue(value);
+                return oldValue;
+            }
+        }
+
+        // add new entry
+        tab[index].add(new Entry<>(key, value));
+        size++;
+
         return null;
+    }
+
+    private void resize() {
+        int newCapacity = nextPrime(tab.length * 2);
+        LinkedList<Entry<K, V>>[] newTab = new LinkedList[newCapacity];
+
+        for (LinkedList<Entry<K, V>> entries : tab) {
+            if (entries != null) {
+                for (Entry<K, V> e : entries) {
+                    int newIndex = Math.abs(e.getKey().hashCode()) % newCapacity;
+                    if (newTab[newIndex] == null) {
+                        newTab[newIndex] = new LinkedList<>();
+                    }
+                    newTab[newIndex].add(e);
+                }
+            }
+        }
+
+        this.tab = newTab;
     }
 
     @Override
     public V search(K key) {
-        for (Entry<K, V> e : tab[hash(key)]) {
-            if (e.getKey().equals(key)) {
-                return e.getValue();
+        if (key == null) {
+            throw new IllegalArgumentException("Key must not be null");
+        }
+        int index = hash(key);
+        if (tab[index] != null) {
+            for (Entry<K, V> e : tab[index]) {
+                if (e.getKey().equals(key)) {
+                    // key found
+                    return e.getValue();
+                }
             }
         }
 
+        // key not found
         return null;
     }
 
@@ -85,6 +135,22 @@ public class LinkedHashDictionary<K extends Comparable<? super K>, V> implements
     @Override
     public int size() {
         return this.tab.length;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < tab.length; i++) {
+            if (tab[i] != null) {
+                sb.append(i).append(": ");
+                for (Entry<K, V> e : tab[i]) {
+                    sb.append(e.getKey()).append("=").append(e.getValue()).append(", ");
+                }
+                sb.setLength(sb.length() - 2); // remove last comma and space
+                sb.append("\n");
+            }
+        }
+        return sb.toString();
     }
 
     @Override
