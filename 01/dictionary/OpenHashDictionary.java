@@ -7,12 +7,12 @@ import java.util.NoSuchElementException;
 @SuppressWarnings("unchecked")
 public class OpenHashDictionary<K extends Comparable<? super K>, V> implements Dictionary<K, V>{
 
-    LinkedList<Entry<K, V>>[] tab;
+    Entry<K, V>[] tab;
     int size;
 
 
     public OpenHashDictionary(int capacity) {
-        this.tab = new LinkedList[capacity];
+        this.tab = new Entry[capacity];
         this.size = 0;
     }
 
@@ -61,6 +61,8 @@ public class OpenHashDictionary<K extends Comparable<? super K>, V> implements D
         return Math.abs(key.hashCode()) % tab.length;
     }
 
+    private int mod()
+
 
     @Override
     public V insert(K key, V value) {
@@ -68,43 +70,43 @@ public class OpenHashDictionary<K extends Comparable<? super K>, V> implements D
             throw new IllegalArgumentException("Key and value must not be null");
         }
 
-        int index = hash(key);
-        if (tab[index] == null) {
-            tab[index] = new LinkedList<>();
-        } else if (0.66 <= size / tab.length) { // load factor bigger than 2
+        if (0.66 <= size / tab.length) { // load factor bigger than 2
             resize();
-            index = hash(key);
-            tab[index] = new LinkedList<>();
         }
-
-        for (Entry<K, V> e : tab[index]) {
-            // replace value if key already exists and return old value
-            if (e.getKey().equals(key)) {
-                V oldValue = e.getValue();
-                e.setValue(value);
+        int index = hash(key);
+        int i = 0 
+        while (tab[index] != null and i++ < tab.length) {
+            if (tab[index].getKey().equals(key)){
+                // replace value if key already exists and return old value
+                V oldValue = tab[index].getValue();
+                tab[index].setValue(value);
                 return oldValue;
             }
+            power = (int) Math.pow(-1, i);
+            index = (((index + power * i*i)%tab.length) + tab.length) % tab.length;
+            
         }
+        if (tab[index] == null) {
 
-        // add new entry
-        tab[index].add(new Entry<>(key, value));
-        size++;
+            // add new entry
+            tab[index] = new Entry<>(key, value);
+            size++;
+        }
 
         return null;
     }
 
+    // THE FUNCTIONS ABOVE THIS COMMENT SHOULD WORK -- THE FUNCTIONS ABOVE THIS COMMENT SHOULD WORK -- THE FUNCTIONS ABOVE THIS COMMENT SHOULD WORK -- THE FUNCTIONS ABOVE THIS COMMENT SHOULD WORK
+
     private void resize() {
         int newCapacity = nextPrime(tab.length * 2);
-        LinkedList<Entry<K, V>>[] newTab = new LinkedList[newCapacity];
+        Entry<K, V>[] newTab = new Entry[newCapacity];
 
-        for (LinkedList<Entry<K, V>> entries : tab) {
-            if (entries != null) {
-                for (Entry<K, V> e : entries) {
-                    int newIndex = Math.abs(e.getKey().hashCode()) % newCapacity;
-                    if (newTab[newIndex] == null) {
-                        newTab[newIndex] = new LinkedList<>();
-                    }
-                    newTab[newIndex].add(e);
+        for (Entry<K, V> entry : tab) {
+            if (entry != null) {
+                int newIndex = Math.abs(e.getKey().hashCode()) % newCapacity;
+                if (newTab[newIndex] == null) {
+                    newTab[newIndex] = new LinkedList<>();
                 }
             }
         }
