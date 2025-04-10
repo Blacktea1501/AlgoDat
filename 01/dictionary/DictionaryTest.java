@@ -20,31 +20,60 @@ public class DictionaryTest {
 	 * @param args not used.
 	 */
 	public static void main(String[] args)  {
-		// testSortedArrayDictionary();
-	//	testLinkedHashDictionary();
-		testOpenHashWithQuadraticProbingDictionary();
-//		testBinaryTreeDictionary();
+		//testSortedArrayDictionary();
+		testLinkedHashDictionary();
+		//testOpenHashWithQuadraticProbingDictionary();
+		//testBinaryTreeDictionary();
 
-		 cpuTime();
+		 cpuTime(1);
 	}
 
-	private static void cpuTime() {
+	private static void cpuTime(int version) {
 		// Dictionary<String, String> dict = new SortedArrayDictionary<>();
-		// Dictionary<String, String> dict = new LinkedHashDictionary<>(7);
-		Dictionary<String, String> dict = new OpenHashDictionary<>(7);
+		//Dictionary<String, String> dict = new LinkedHashDictionary<>(7);
+		// Dictionary<String, String> dict = new OpenHashDictionary<>(7);
 
-		ArrayList<String> lines = readFile("01/dictionary/dtengl.txt");
+		//ArrayList<String> lines = readFile("dictionary/dtengl.txt");
 
 		// test for all lines
-		insertTest(lines, dict, lines.size());
-		searchTest(lines, dict, lines.size());
-        System.out.println();
+		//insertTest(lines, dict, lines.size());
+		//searchTest(lines, dict, lines.size());
+        //System.out.println();
 		// test for first 8000 lines
 		// dict = new SortedArrayDictionary<>();
-		// dict = new LinkedHashDictionary<>(7);
-		dict = new OpenHashDictionary<>(7);
-		insertTest(lines, dict, 8000);
-		searchTest(lines, dict, 8000);
+		//dict = new LinkedHashDictionary<>(7);
+		// dict = new OpenHashDictionary<>(7);
+		//insertTest(lines, dict, 8000);
+		//searchTest(lines, dict, 8000);
+
+
+        ArrayList<String> lines = readFile("dictionary/dtengl.txt");
+        Dictionary<String, String> dictL;
+        Dictionary<String, String> dictS;
+        switch (version) {
+            case 0:
+                dictL = new SortedArrayDictionary<>();
+                dictS = new SortedArrayDictionary<>();
+                break;
+            case 1:
+                dictL = new LinkedHashDictionary<>(7);
+		        dictS = new LinkedHashDictionary<>(7);
+                break;
+            case 2:
+                dictL = new OpenHashDictionary<>(7);
+                dictS = new OpenHashDictionary<>(7);
+                break;
+            //case 3:
+                //break;
+            default:
+                dictL = new SortedArrayDictionary<>();
+                dictS = new SortedArrayDictionary<>();                
+        }
+        insertTest(lines, dictL, lines.size());
+		searchTest(lines, dictL, lines.size());
+        System.out.println();
+        insertTest(lines, dictS, 8000);
+		searchTest(lines, dictS, 8000);
 	}
 
 	private static void testSortedArrayDictionary() {

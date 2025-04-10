@@ -92,6 +92,7 @@ public class TUI {
                 System.out.println("i deutsch englisch    - Insert key value pair");
                 System.out.println("d deutsch             - Delete key");
                 System.out.println("exit                  - Exit the program");
+                System.out.println();
                 System.out.println("Available implementations:");
                 System.out.println("SortedArrayDictionary (SAD)");
                 System.out.println("LinkedHashDictionary (LHD)");
@@ -106,7 +107,7 @@ public class TUI {
             }
 
             // check if input is exit
-            if(input.equals("exit")) {
+            if(input.equals("exit") || input.equals("q")) {
                 System.out.println("Good bye!");
                 break;
             }
