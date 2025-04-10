@@ -47,7 +47,10 @@ public class DictionaryTest {
 		//searchTest(lines, dict, 8000);
 
 
-        ArrayList<String> lines = readFile("dictionary/dtengl.txt");
+        ArrayList<String> lines = readFile("01/dictionary/dtengl.txt");
+        if (lines.isEmpty()) {
+            lines = readFile("dictionary/dtengl.txt");
+        }
         Dictionary<String, String> dictL;
         Dictionary<String, String> dictS;
         switch (version) {
