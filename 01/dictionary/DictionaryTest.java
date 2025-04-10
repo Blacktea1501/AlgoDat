@@ -21,8 +21,8 @@ public class DictionaryTest {
 	 */
 	public static void main(String[] args)  {
 		// testSortedArrayDictionary();
-		testLinkedHashDictionary();
-//		testOpenHashWithQuadraticProbingDictionary();
+	//	testLinkedHashDictionary();
+		testOpenHashWithQuadraticProbingDictionary();
 //		testBinaryTreeDictionary();
 
 		 cpuTime();
@@ -30,7 +30,8 @@ public class DictionaryTest {
 
 	private static void cpuTime() {
 		// Dictionary<String, String> dict = new SortedArrayDictionary<>();
-		Dictionary<String, String> dict = new LinkedHashDictionary<>(7);
+		// Dictionary<String, String> dict = new LinkedHashDictionary<>(7);
+		Dictionary<String, String> dict = new OpenHashDictionary<>(7);
 
 		ArrayList<String> lines = readFile("01/dictionary/dtengl.txt");
 
@@ -39,8 +40,9 @@ public class DictionaryTest {
 		searchTest(lines, dict, lines.size());
         System.out.println();
 		// test for first 8000 lines
-//		dict = new SortedArrayDictionary<>();
-		dict = new LinkedHashDictionary<>(7);
+		// dict = new SortedArrayDictionary<>();
+		// dict = new LinkedHashDictionary<>(7);
+		dict = new OpenHashDictionary<>(7);
 		insertTest(lines, dict, 8000);
 		searchTest(lines, dict, 8000);
 	}

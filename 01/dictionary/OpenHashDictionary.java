@@ -1,15 +1,13 @@
 package dictionary;
 
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.NoSuchElementException;
 
 @SuppressWarnings("unchecked")
-public class OpenHashDictionary<K extends Comparable<? super K>, V> implements Dictionary<K, V>{
+public class OpenHashDictionary<K extends Comparable<? super K>, V> implements Dictionary<K, V> {
 
     Entry<K, V>[] tab;
     int size;
-
+    final Entry<K,V> DELETED = new Entry<>(null, null);
 
     public OpenHashDictionary(int capacity) {
         this.tab = new Entry[capacity];
@@ -18,15 +16,19 @@ public class OpenHashDictionary<K extends Comparable<? super K>, V> implements D
 
     @Override
     public V remove(K key) {
-        var it = tab[hash(key)].iterator();
-        while (it.hasNext()){
-            Entry<K,V> e = it.next();
-            if (e.getKey().equals(key)) {
-                it.remove();
-                this.size--;
-                return e.getValue();
-            }
+
+        if (key == null) {
+            throw new IllegalArgumentException("Key must not be null");
         }
+
+        int index = searchAdr(key);
+        if (index != -1 && tab[index] != null && tab[index] != DELETED) {
+            V value = tab[index].getValue();
+            tab[index] = DELETED;
+            size--;
+            return value;
+        }
+
         return null;
     }
 
@@ -61,52 +63,74 @@ public class OpenHashDictionary<K extends Comparable<? super K>, V> implements D
         return Math.abs(key.hashCode()) % tab.length;
     }
 
-    private int mod()
-
-
     @Override
     public V insert(K key, V value) {
         if (key == null || value == null) {
             throw new IllegalArgumentException("Key and value must not be null");
         }
 
-        if (0.66 <= size / tab.length) { // load factor bigger than 2
+        if (0.66 <= (double) this.size / this.tab.length) {
             resize();
         }
-        int index = hash(key);
-        int i = 0 
-        while (tab[index] != null and i++ < tab.length) {
-            if (tab[index].getKey().equals(key)){
-                // replace value if key already exists and return old value
+        int index = searchAdr(key);
+        if (index != -1) {
+            if (tab[index] == DELETED || tab[index] == null) {
+                tab[index] = new Entry<>(key, value);
+                size++;
+                return null;
+            } else {
                 V oldValue = tab[index].getValue();
                 tab[index].setValue(value);
                 return oldValue;
             }
-            power = (int) Math.pow(-1, i);
-            index = (((index + power * i*i)%tab.length) + tab.length) % tab.length;
-            
-        }
-        if (tab[index] == null) {
-
-            // add new entry
-            tab[index] = new Entry<>(key, value);
-            size++;
         }
 
         return null;
     }
 
-    // THE FUNCTIONS ABOVE THIS COMMENT SHOULD WORK -- THE FUNCTIONS ABOVE THIS COMMENT SHOULD WORK -- THE FUNCTIONS ABOVE THIS COMMENT SHOULD WORK -- THE FUNCTIONS ABOVE THIS COMMENT SHOULD WORK
+
+    private int probe(int j, K key) {
+        return (hash(key) + j * j) % tab.length;
+    }
+
+    private int searchAdr(K key) {
+        if (key == null){
+            throw new IllegalArgumentException("Key must not be null");
+        }
+        int candidate = -1;
+        int j = 0;
+        while (j < tab.length) {
+            int index = (hash(key) + (j * j)) % tab.length;
+            if (tab[index] == null) {
+                return candidate != -1 ? candidate : index;
+            } else if (tab[index] == DELETED) {
+                if (candidate == -1) {
+                    candidate = index;
+                }
+            } else if (tab[index].getKey().equals(key)) {
+                return index;
+            }
+            j++;
+        }
+        return candidate;
+
+    }
 
     private void resize() {
-        int newCapacity = nextPrime(tab.length * 2);
+        int newCapacity = nextPrime(this.tab.length * 2);
         Entry<K, V>[] newTab = new Entry[newCapacity];
 
-        for (Entry<K, V> entry : tab) {
-            if (entry != null) {
-                int newIndex = Math.abs(e.getKey().hashCode()) % newCapacity;
-                if (newTab[newIndex] == null) {
-                    newTab[newIndex] = new LinkedList<>();
+        // mit sondierung
+        for (Entry<K, V> kvEntry : this.tab) {
+            if (kvEntry != null && kvEntry != DELETED) {
+                int j = 0;
+                while (j < newTab.length) {
+                    int index = (Math.abs(kvEntry.getKey().hashCode()) % newTab.length + j * j) % newTab.length;
+                    if (newTab[index] == null) {
+                        newTab[index] = kvEntry;
+                        break;
+                    }
+                    j++;
                 }
             }
         }
@@ -119,17 +143,13 @@ public class OpenHashDictionary<K extends Comparable<? super K>, V> implements D
         if (key == null) {
             throw new IllegalArgumentException("Key must not be null");
         }
-        int index = hash(key);
-        if (tab[index] != null) {
-            for (Entry<K, V> e : tab[index]) {
-                if (e.getKey().equals(key)) {
-                    // key found
-                    return e.getValue();
-                }
-            }
+
+        int adr = searchAdr(key);
+
+        if (adr != -1 && this.tab[adr] != null && this.tab[adr] != DELETED) {
+            return tab[adr].getValue();
         }
 
-        // key not found
         return null;
     }
 
@@ -144,12 +164,7 @@ public class OpenHashDictionary<K extends Comparable<? super K>, V> implements D
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < tab.length; i++) {
             if (tab[i] != null) {
-                sb.append(i).append(": ");
-                for (Entry<K, V> e : tab[i]) {
-                    sb.append(e.getKey()).append("=").append(e.getValue()).append(", ");
-                }
-                sb.setLength(sb.length() - 2); // remove last comma and space
-                sb.append("\n");
+                sb.append(i).append(": ").append(tab[i].toString()).append("\n");
             }
         }
         return sb.toString();
@@ -157,30 +172,23 @@ public class OpenHashDictionary<K extends Comparable<? super K>, V> implements D
 
     @Override
     public Iterator<Entry<K, V>> iterator() {
-        return new Iterator<>() {
-            private int currentIndex = 0;
-            private Iterator<Entry<K, V>> currentIterator = null;
+        return new Iterator<Entry<K, V>>() {
+            int index = 0;
 
             @Override
             public boolean hasNext() {
-                while (currentIterator == null || !currentIterator.hasNext()) {
-                    if (currentIndex >= tab.length) {
-                        return false;
-                    }
-                    if (tab[currentIndex] != null) {
-                        currentIterator = tab[currentIndex].iterator();
-                    }
-                    currentIndex++;
+                while (index < tab.length && tab[index] == null) {
+                    index++;
                 }
-                return true;
+                return index < tab.length;
             }
 
             @Override
             public Entry<K, V> next() {
                 if (!hasNext()) {
-                    throw new NoSuchElementException();
+                    throw new IllegalStateException("No more elements");
                 }
-                return currentIterator.next();
+                return tab[index++];
             }
         };
     }
