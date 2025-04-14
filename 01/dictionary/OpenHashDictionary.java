@@ -163,8 +163,8 @@ public class OpenHashDictionary<K extends Comparable<? super K>, V> implements D
     public String toString() {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < tab.length; i++) {
-            if (tab[i] != null) {
-                sb.append(i).append(": ").append(tab[i].toString()).append("\n");
+            if (tab[i] != null && tab[i] != DELETED) {
+                sb.append(i).append(": ").append(tab[i].getKey()).append(" -> ").append(tab[i].getValue()).append("\n");
             }
         }
         return sb.toString();
