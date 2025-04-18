@@ -21,11 +21,11 @@ public class DictionaryTest {
 	 */
 	public static void main(String[] args)  {
 		//testSortedArrayDictionary();
-		testLinkedHashDictionary();
+		//testLinkedHashDictionary();
 		//testOpenHashWithQuadraticProbingDictionary();
-		//testBinaryTreeDictionary();
+		testBinaryTreeDictionary();
 
-		 cpuTime(1);
+		 cpuTime(3);
 	}
 
 	private static void cpuTime(int version) {
@@ -66,8 +66,10 @@ public class DictionaryTest {
                 dictL = new OpenHashDictionary<>(7);
                 dictS = new OpenHashDictionary<>(7);
                 break;
-            //case 3:
-                //break;
+            case 3:
+				dictL = new BinaryTreeDictionary<>();
+				dictS = new BinaryTreeDictionary<>();
+                break;
             default:
                 dictL = new SortedArrayDictionary<>();
                 dictS = new SortedArrayDictionary<>();                

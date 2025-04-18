@@ -146,6 +146,8 @@ public class TUI {
                         break;
                     case "BTD":
                     case "BinaryTreeDictionary":
+                        dictionary = new BinaryTreeDictionary<>();
+                        System.out.println("Created new BinaryTreeDictionary");
                         // create new BinaryTreeDictionary
                         break;
                     default:
@@ -172,7 +174,11 @@ public class TUI {
                     System.out.println("No dictionary created");
                     continue;
                 }
-                System.out.println(dictionary);
+                if (dictionary.getClass().equals(BinaryTreeDictionary.class)) {
+                    ((BinaryTreeDictionary<String, String>) dictionary).prettyPrint();
+                } else {
+                    System.out.println(dictionary);
+                }
                 continue;
             }
 

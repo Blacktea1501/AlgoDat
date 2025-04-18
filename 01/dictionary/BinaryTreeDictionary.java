@@ -2,9 +2,8 @@
 // 22.09.2022
 package dictionary;
 
-import java.util.Comparator;
 import java.util.Iterator;
-import java.util.NoSuchElementException;
+import java.util.NoSuchElementException; // Import for Iterator
 
 /**
  * Implementation of the Dictionary interface as AVL tree.
@@ -19,10 +18,6 @@ import java.util.NoSuchElementException;
  */
 public class BinaryTreeDictionary<K extends Comparable<? super K>, V> implements Dictionary<K, V> {
 
-    private static class MinEntry<K, V> {
-        private K key;
-        private V value;
-    }
 
     static private class Node<K, V> {
         K key;
@@ -45,206 +40,169 @@ public class BinaryTreeDictionary<K extends Comparable<? super K>, V> implements
 
     private Node<K, V> root = null;
     private int size = 0;
+    private V oldValue = null;
 
-    private V oldValue;
+    // Helper class for removeMin simulation, not directly related to AVL balancing
+    private static class MinEntry<K, V> {
+        K key;
+        V value;
+    }
+
+    // Recursive helper for remove, extracts minimum node
+    private Node<K, V> getRemMinR(Node<K, V> node, MinEntry<K, V> minEntry) {
+        assert node != null;
+        if (node.left == null) {
+            // Found the minimum node
+            minEntry.key = node.key;
+            minEntry.value = node.value;
+            // Replace node with its right child (might be null)
+            Node<K,V> rightChild = node.right;
+            if (rightChild != null) {
+                rightChild.parent = node.parent; // Update parent pointer
+            }
+            return rightChild; // Return the right child to the caller
+        } else {
+            node.left = getRemMinR(node.left, minEntry);
+            // After recursive call returns, re-set parent if node.left exists
+            if (node.left != null) {
+                 node.left.parent = node;
+            }
+        }
+        // Balance the current node after modification in the left subtree
+        return balance(node); // Return balanced node
+    }
+
 
     private int getHeight(Node<K, V> node) {
         return node == null ? -1 : node.height;
     }
 
-    private int getBalance(Node<K, V> p) {
-        return p == null ? 0 : getHeight(p.right) - getHeight(p.left);
+    private int getBalance(Node<K, V> node) {
+        // If node is null, it's balanced (height -1 - (-1) = 0)
+        return node == null ? 0 : getHeight(node.left) - getHeight(node.right);
     }
 
-    @Override
-    public V search(K key) {
-        return searchR(key, this.root);
-    }
+    // Balances the subtree rooted at node and returns the new root of the balanced subtree.
+    private Node<K, V> balance(Node<K, V> node) {
+        if (node == null) return null; // Nothing to balance
 
-    private V searchR(K key, Node<K, V> p) {
-        if (p == null) {
-            return null;
-        } else if (key.compareTo(p.key) < 0) {
-            return searchR(key, p.left);
-        } else if (key.compareTo(p.key) > 0) {
-            return searchR(key, p.right);
-        } else {
-            return p.value;
+        // Update height first, as rotations depend on child heights
+        node.height = Math.max(getHeight(node.left), getHeight(node.right)) + 1;
+
+        int currentBalance = getBalance(node);
+
+        // Case 1: Left Heavy (Balance Factor > 1)
+        if (currentBalance > 1) {
+            // Left-Left Case: Simple Right Rotation
+            if (getBalance(node.left) >= 0) {
+                node = rotateRight(node);
+            }
+            // Left-Right Case: Left Rotation on left child, then Right Rotation on node
+            else {
+                node = rotateLeftRight(node);
+            }
         }
-    }
-
-    private Node<K, V> balance(Node<K, V> p) {
-        if (p == null) return null;
-
-        p.height = Math.max(getHeight(p.left), getHeight(p.right)) + 1; // update height
-
-        if (getBalance(p) == -2) {
-            return getBalance(p.left) <= 0 ? rotateRight(p) : rotateLeftRight(p);
-        } else if (getBalance(p) == 2) {
-            return getBalance(p.right) >= 0 ? rotateLeft(p) : rotateRightLeft(p);
+        // Case 2: Right Heavy (Balance Factor < -1)
+        else if (currentBalance < -1) {
+            // Right-Right Case: Simple Left Rotation
+            if (getBalance(node.right) <= 0) {
+                node = rotateLeft(node);
+            }
+            // Right-Left Case: Right Rotation on right child, then Left Rotation on node
+            else {
+                node = rotateRightLeft(node);
+            }
         }
-        return p;
+        // Else: node is balanced (balance is -1, 0, or 1) - do nothing
+
+        return node; // Return the potentially new root of the balanced subtree
     }
 
+    // Performs a right rotation on the subtree rooted at p.
+    // Returns the new root of the rotated subtree.
     private Node<K, V> rotateRight(Node<K, V> p) {
-        assert p.left != null;
-        Node<K, V> q = p.left;
-        p.left = q.right;
-        q.right = p;
+        assert p.left != null; // Precondition for right rotation
+        Node<K, V> x = p.left;
+        Node<K, V> t2 = x.right; // Subtree T2
+        Node<K, V> parent = p.parent; // Keep track of the original parent of p
+
+        // Perform rotation
+        x.right = p;
+        p.parent = x; // p's new parent is x
+
+        p.left = t2;
+        if (t2 != null) {
+            t2.parent = p; // t2's new parent is p
+        }
+
+        x.parent = parent; // x's parent becomes p's original parent
+        if (parent != null) {
+            // Update the child pointer of the original parent
+            if (parent.left == p) {
+                parent.left = x;
+            } else {
+                parent.right = x;
+            }
+        }
         p.height = Math.max(getHeight(p.left), getHeight(p.right)) + 1;
-        q.height = Math.max(getHeight(q.left), getHeight(q.right)) + 1;
-        return q;
+        x.height = Math.max(getHeight(x.left), getHeight(x.right)) + 1; // or getHeight(p)
+
+        return x; // Return the new root of the rotated subtree
     }
 
+    // Performs a left rotation on the subtree rooted at p.
+    // Returns the new root of the rotated subtree.
     private Node<K, V> rotateLeft(Node<K, V> p) {
-        assert p.right != null;
-        Node<K, V> q = p.right;
-        p.right = q.left;
-        q.left = p;
+        assert p.right != null; // Precondition for left rotation
+        Node<K, V> x = p.right;
+        Node<K, V> t2 = x.left; // Subtree T2
+        Node<K, V> parent = p.parent; // Keep track of the original parent of p
+
+        // Perform rotation
+        x.left = p;
+        p.parent = x; // p's new parent is x
+
+        p.right = t2;
+        if (t2 != null) {
+            t2.parent = p; // t2's new parent is p
+        }
+
+        // Link x to the original parent of p
+        x.parent = parent;
+        if (parent != null) {
+            // Update the child pointer of the original parent
+            if (parent.left == p) {
+                parent.left = x;
+            } else {
+                // Assuming p was the right child if not the left
+                parent.right = x;
+            }
+        }
         p.height = Math.max(getHeight(p.left), getHeight(p.right)) + 1;
-        q.height = Math.max(getHeight(q.left), getHeight(q.right)) + 1;
-        return q;
+        x.height = Math.max(getHeight(x.left), getHeight(x.right)) + 1; // or getHeight(p)
+        return x; // Return the new root of the rotated subtree
     }
 
-    private Node<K, V> rotateLeftRight(Node<K, V> p) {
-        assert p.left != null;
-        p.left = rotateLeft(p.left);
-        return rotateRight(p);
-    }
-
-    private Node<K, V> rotateRightLeft(Node<K, V> p) {
-        assert p.right != null;
-        p.right = rotateRight(p.right);
-        return rotateLeft(p);
-    }
-
-
-    @Override
-    public V insert(K key, V value) {
-        if (this.root == null) {
-            this.root = new Node<K, V>(key, value);
-            this.size++;
-            return null;
+    private Node<K, V> rotateLeftRight(Node<K, V> node) {
+        assert node.left != null;
+        node.left = rotateLeft(node.left);
+        if (node.left != null) {
+             node.left.parent = node;
         }
-        this.root = insertR(key, value, this.root);
-        return oldValue;
+        return rotateRight(node);
     }
 
-    private Node<K, V> insertR(K key, V value, Node<K, V> p) {
-        if (p == null) {
-            p = new Node<K, V>(key, value);
-            this.size++;
-            oldValue = null;
-        } else if (key.compareTo(p.key) < 0) {
-            p.left = insertR(key, value, p.left);
-        } else if (key.compareTo(p.key) > 0) {
-            p.right = insertR(key, value, p.right);
-        } else { // key exists, update value
-            oldValue = p.value;
-            p.value = value;
+    private Node<K, V> rotateRightLeft(Node<K, V> node) {
+        assert node.right != null;
+        node.right = rotateRight(node.right);
+        if (node.right != null) {
+            node.right.parent = node;
         }
-        return balance(p);
-    }
-
-    @Override
-    public V remove(K key) {
-        root = removeR(key, root);
-        return oldValue;
-    }
-
-    private Node<K, V> removeR(K key, Node<K, V> p) {
-        if (p == null) {
-            oldValue = null;
-            return null;
-        } else if (key.compareTo(p.key) < 0) {
-            p.left = removeR(key, p.left);
-        } else if (key.compareTo(p.key) > 0) {
-            p.right = removeR(key, p.right);
-        } else if (p.left == null || p.right == null) {
-            oldValue = p.value;
-            p = (p.left != null) ? p.left : p.right;
-        } else {
-            MinEntry<K, V> min = new MinEntry<>();
-            p.right = getRemMinR(p.right, min);
-            p.key = min.key;
-            p.value = min.value;
-            oldValue = min.value;
-        }
-        return balance(p);
-    }
-
-    private Node<K, V> getRemMinR(Node<K, V> p, MinEntry<K, V> min) {
-        assert p != null;
-        if (p.left == null) {
-            min.key = p.key;
-            min.value = p.value;
-            p = p.right;
-        } else {
-            p.left = getRemMinR(p.left, min);
-        }
-        return p;
-    }
-
-
-    @Override
-    public int size() {
-        return this.size;
-    }
-
-    @Override
-    public Iterator<Entry<K, V>> iterator() {
-        return new Iterator<Entry<K, V>>() {
-            Node<K, V> next = getMin(root);
-
-            @Override
-            public boolean hasNext() {
-                return next != null;
-            }
-
-            @Override
-            public Entry<K, V> next() {
-                if (!hasNext()) {
-                    throw new NoSuchElementException();
-                }
-                Node<K, V> r = next;
-                next = getSuccessor(next);
-                return new Entry<K, V>(r.key, r.value);
-            }
-        };
-    }
-
-    private Node<K, V> getMin(Node<K, V> p) {
-
-        if (p == null) {
-            return null;
-        }
-
-        while (p.left != null) {
-            p = p.left;
-        }
-
-        return p;
-    }
-
-    private Node<K, V> getSuccessor(Node<K, V> p) {
-
-        if (p == null) {
-            return null;
-        }
-
-        if (p.right != null) {
-            return getMin(p.right);
-        }
-
-        while (p.parent != null && p.parent.right == p) {
-            p = p.parent;
-        }
-
-        return p.parent;
+        return rotateLeft(node);
     }
 
     /**
-     * Pretty prints the tree
+     * Pretty prints the tree (Original Version)
      */
     public void prettyPrint() {
         printR(0, root);
@@ -271,5 +229,231 @@ public class BinaryTreeDictionary<K extends Comparable<? super K>, V> implements
             System.out.print("   ");
         }
         System.out.print("|__");
+    }
+
+    @Override
+    public V insert(K key, V value) {
+        oldValue = null; // Reset oldValue for this insertion attempt
+        root = insertR(key, value, root);
+        // The root's parent should always be null after insertion and balancing.
+        if (root != null) {
+            root.parent = null;
+        }
+        return oldValue; // Return value replaced, or null if new key
+    }
+
+    // Recursive helper for insert. Returns the new root of the subtree.
+    private Node<K, V> insertR(K key, V value, Node<K, V> node) {
+        if (node == null) {
+            // Found insertion point
+            node = new Node<>(key, value);
+            oldValue = null; // Key was not present before
+            size++;
+        } else if (key.compareTo(node.key) < 0) {
+            // Go left
+            node.left = insertR(key, value, node.left);
+            // After recursive call returns, set parent pointer for the potentially new left child
+            if (node.left != null) {
+                node.left.parent = node;
+            }
+        } else if (key.compareTo(node.key) > 0) {
+            // Go right
+            node.right = insertR(key, value, node.right);
+             // After recursive call returns, set parent pointer for the potentially new right child
+            if (node.right != null) {
+                node.right.parent = node;
+            }
+        } else {
+            // Key already exists, update value
+            oldValue = node.value;
+            node.value = value;
+            // No need to balance here if only value is updated
+            return node; // Return node without balancing if only value changed
+        }
+
+        // Balance the current node after insertion in a subtree
+        return balance(node); // Return the (potentially new) root of this subtree
+    }
+
+
+    @Override
+    public V search(K key) {
+        return searchR(key, root);
+    }
+
+    // Recursive helper for search
+    private V searchR(K key, Node<K, V> node) {
+        if (node == null) {
+            return null; // Key not found
+        }
+
+        int cmp = key.compareTo(node.key);
+        if (cmp < 0) {
+            return searchR(key, node.left); // Search in left subtree
+        } else if (cmp > 0) {
+            return searchR(key, node.right); // Search in right subtree
+        } else {
+            return node.value; // Key found
+        }
+    }
+
+    @Override
+    public V remove(K key) {
+        oldValue = null; // Reset oldValue for this removal attempt
+        root = removeR(key, root);
+        // Ensure root's parent is null after removal
+         if (root != null) {
+            root.parent = null;
+         }
+        return oldValue;
+    }
+
+    // Recursive helper for remove. Returns the new root of the subtree.
+    private Node<K, V> removeR(K key, Node<K, V> node) {
+        if (node == null) {
+            oldValue = null; // Key not found
+            return null; // Return null as the subtree root
+        }
+
+        int cmp = key.compareTo(node.key);
+        if (cmp < 0) {
+            // Key is in the left subtree
+            node.left = removeR(key, node.left);
+            if (node.left != null) {
+                 node.left.parent = node;
+            }
+        } else if (cmp > 0) {
+            // Key is in the right subtree
+            node.right = removeR(key, node.right);
+             if (node.right != null) {
+                 node.right.parent = node;
+             }
+        } else {
+            // Node to be removed found
+            oldValue = node.value; // Store value to return
+
+            // Case 1: Node has 0 or 1 child
+            if (node.left == null || node.right == null) {
+                Node<K, V> child = (node.left != null) ? node.left : node.right;
+                // If child exists, update its parent pointer BEFORE returning it
+                if (child != null) {
+                    child.parent = node.parent; // Link child to grandparent
+                }
+                size--; // Decrease size
+                node = child; // Replace node with its child (or null) - MUST reassign node to return it
+            }
+            // Case 2: Node has 2 children
+            else {
+                // Find the inorder successor (smallest node in the right subtree)
+                MinEntry<K, V> minEntry = new MinEntry<>();
+
+                // Remove successor from right subtree and get the modified right subtree root
+                node.right = getRemMinR(node.right, minEntry);
+                // After removal, ensure parent of new right root is set
+                if (node.right != null) {
+                    node.right.parent = node;
+                }
+
+                // Replace node's data with successor's data
+                node.key = minEntry.key;
+                node.value = minEntry.value;
+                // Size was already decremented in getRemMinR indirectly if successful
+                size--;
+            }
+        }
+
+        // Balance the current node (or the node that replaced it) after removal/modification
+        // This needs to happen *after* the node is potentially replaced or modified
+        return balance(node); // Return the balanced node
+    }
+
+
+    @Override
+    public int size() {
+        return size;
+    }
+
+    // --- prettyPrint method converted to toString  ---
+
+    @Override
+    public String toString() {
+        String s = "";
+        s = buildR(s, 0, root);
+        return s;
+    }
+
+
+    private String buildR(String s, int level, Node<K, V> node) {
+        s = s + buildLevel(level);
+        if (node == null) {
+            return s + "\n";
+        } else {
+            s = s + node.key + " " + node.value + "^" + ((node.parent == null) ? "null" : node.parent.key) + "\n";
+            if (node.left != null || node.right != null) {
+                s = buildR(s, level + 1, node.left);
+                s = buildR(s, level + 1, node.right);
+            }
+        }
+        return s;
+    }
+
+    private String buildLevel(int level) {
+        return level == 0 ? "" : "  ".repeat(Math.max(0, level - 1)) + "|__";
+    }
+
+    // --- Iterator ---
+
+    // Finds the leftmost node in the subtree rooted at p
+    private Node<K, V> leftmost(Node<K, V> p) {
+        if (p == null) return null;
+        while (p.left != null) {
+            p = p.left;
+        }
+        return p;
+    }
+
+    // Finds the successor of node p in the tree
+    private Node<K, V> successor(Node<K, V> p) {
+        if (p == null) return null;
+
+        // If there's a right subtree, successor is the leftmost node there
+        if (p.right != null) {
+            return leftmost(p.right);
+        }
+
+        // Otherwise, go up until we come from a left child
+        Node<K, V> current = p;
+        Node<K, V> parent = p.parent;
+        while (parent != null && current == parent.right) {
+            current = parent;
+            parent = parent.parent;
+        }
+        // parent is the successor (or null if p was the maximum node)
+        return parent;
+    }
+
+
+    @Override
+    public Iterator<Entry<K, V>> iterator() {
+        // Start iterator at the smallest key (leftmost node)
+        Node<K, V> current = leftmost(root);
+        return new Iterator<>() {
+            private Node<K, V> nextNode = current; // Node to be returned by next()
+
+            @Override
+            public boolean hasNext() {
+                return nextNode != null;
+            }
+
+            @Override
+            public Entry<K, V> next() {
+                if (!hasNext()) {
+                    throw new NoSuchElementException("No more elements in dictionary");
+                }
+                Node<K, V> nodeToReturn = nextNode;
+                nextNode = successor(nextNode);
+                return new Entry<>(nodeToReturn.key, nodeToReturn.value);
+            }
+        };
     }
 }
