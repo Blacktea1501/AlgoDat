@@ -3,7 +3,7 @@
 package dictionary;
 
 import java.util.Iterator;
-import java.util.NoSuchElementException; // Import for Iterator
+import java.util.NoSuchElementException;
 
 /**
  * Implementation of the Dictionary interface as AVL tree.
@@ -78,50 +78,50 @@ public class BinaryTreeDictionary<K extends Comparable<? super K>, V> implements
     }
 
     private int getBalance(Node<K, V> node) {
-        // If node is null, it's balanced (height -1 - (-1) = 0)
+        // If node is null, return 0 (height difference)
         return node == null ? 0 : getHeight(node.left) - getHeight(node.right);
     }
 
     // Balances the subtree rooted at node and returns the new root of the balanced subtree.
     private Node<K, V> balance(Node<K, V> node) {
+
         if (node == null) return null; // Nothing to balance
 
-        // Update height first, as rotations depend on child heights
-        node.height = Math.max(getHeight(node.left), getHeight(node.right)) + 1;
+        node.height = Math.max(getHeight(node.left), getHeight(node.right)) + 1; // update height
 
         int currentBalance = getBalance(node);
 
         // Case 1: Left Heavy (Balance Factor > 1)
         if (currentBalance > 1) {
-            // Left-Left Case: Simple Right Rotation
+            // Left-Left Case:
             if (getBalance(node.left) >= 0) {
                 node = rotateRight(node);
             }
-            // Left-Right Case: Left Rotation on left child, then Right Rotation on node
+            // Left-Right Case:
             else {
                 node = rotateLeftRight(node);
             }
         }
+
         // Case 2: Right Heavy (Balance Factor < -1)
         else if (currentBalance < -1) {
-            // Right-Right Case: Simple Left Rotation
+
+            // Right-Right Case:
             if (getBalance(node.right) <= 0) {
                 node = rotateLeft(node);
             }
-            // Right-Left Case: Right Rotation on right child, then Left Rotation on node
+
+            // Right-Left Case:
             else {
                 node = rotateRightLeft(node);
             }
         }
-        // Else: node is balanced (balance is -1, 0, or 1) - do nothing
 
-        return node; // Return the potentially new root of the balanced subtree
+        return node;
     }
 
-    // Performs a right rotation on the subtree rooted at p.
-    // Returns the new root of the rotated subtree.
     private Node<K, V> rotateRight(Node<K, V> p) {
-        assert p.left != null; // Precondition for right rotation
+        assert p.left != null;
         Node<K, V> x = p.left;
         Node<K, V> t2 = x.right; // Subtree T2
         Node<K, V> parent = p.parent; // Keep track of the original parent of p
@@ -145,15 +145,13 @@ public class BinaryTreeDictionary<K extends Comparable<? super K>, V> implements
             }
         }
         p.height = Math.max(getHeight(p.left), getHeight(p.right)) + 1;
-        x.height = Math.max(getHeight(x.left), getHeight(x.right)) + 1; // or getHeight(p)
+        x.height = Math.max(getHeight(x.left), getHeight(x.right)) + 1;
 
-        return x; // Return the new root of the rotated subtree
+        return x;
     }
 
-    // Performs a left rotation on the subtree rooted at p.
-    // Returns the new root of the rotated subtree.
     private Node<K, V> rotateLeft(Node<K, V> p) {
-        assert p.right != null; // Precondition for left rotation
+        assert p.right != null;
         Node<K, V> x = p.right;
         Node<K, V> t2 = x.left; // Subtree T2
         Node<K, V> parent = p.parent; // Keep track of the original parent of p
@@ -167,20 +165,18 @@ public class BinaryTreeDictionary<K extends Comparable<? super K>, V> implements
             t2.parent = p; // t2's new parent is p
         }
 
-        // Link x to the original parent of p
-        x.parent = parent;
+        x.parent = parent; // x's parent becomes p's original parent
         if (parent != null) {
             // Update the child pointer of the original parent
             if (parent.left == p) {
                 parent.left = x;
             } else {
-                // Assuming p was the right child if not the left
                 parent.right = x;
             }
         }
         p.height = Math.max(getHeight(p.left), getHeight(p.right)) + 1;
-        x.height = Math.max(getHeight(x.left), getHeight(x.right)) + 1; // or getHeight(p)
-        return x; // Return the new root of the rotated subtree
+        x.height = Math.max(getHeight(x.left), getHeight(x.right)) + 1;
+        return x;
     }
 
     private Node<K, V> rotateLeftRight(Node<K, V> node) {
@@ -239,10 +235,9 @@ public class BinaryTreeDictionary<K extends Comparable<? super K>, V> implements
         if (root != null) {
             root.parent = null;
         }
-        return oldValue; // Return value replaced, or null if new key
+        return oldValue;
     }
 
-    // Recursive helper for insert. Returns the new root of the subtree.
     private Node<K, V> insertR(K key, V value, Node<K, V> node) {
         if (node == null) {
             // Found insertion point
@@ -250,16 +245,12 @@ public class BinaryTreeDictionary<K extends Comparable<? super K>, V> implements
             oldValue = null; // Key was not present before
             size++;
         } else if (key.compareTo(node.key) < 0) {
-            // Go left
             node.left = insertR(key, value, node.left);
-            // After recursive call returns, set parent pointer for the potentially new left child
             if (node.left != null) {
                 node.left.parent = node;
             }
         } else if (key.compareTo(node.key) > 0) {
-            // Go right
             node.right = insertR(key, value, node.right);
-             // After recursive call returns, set parent pointer for the potentially new right child
             if (node.right != null) {
                 node.right.parent = node;
             }
@@ -268,11 +259,11 @@ public class BinaryTreeDictionary<K extends Comparable<? super K>, V> implements
             oldValue = node.value;
             node.value = value;
             // No need to balance here if only value is updated
-            return node; // Return node without balancing if only value changed
+            return node;
         }
 
         // Balance the current node after insertion in a subtree
-        return balance(node); // Return the (potentially new) root of this subtree
+        return balance(node);
     }
 
 
@@ -344,9 +335,7 @@ public class BinaryTreeDictionary<K extends Comparable<? super K>, V> implements
             }
             // Case 2: Node has 2 children
             else {
-                // Find the inorder successor (smallest node in the right subtree)
                 MinEntry<K, V> minEntry = new MinEntry<>();
-
                 // Remove successor from right subtree and get the modified right subtree root
                 node.right = getRemMinR(node.right, minEntry);
                 // After removal, ensure parent of new right root is set
@@ -357,14 +346,11 @@ public class BinaryTreeDictionary<K extends Comparable<? super K>, V> implements
                 // Replace node's data with successor's data
                 node.key = minEntry.key;
                 node.value = minEntry.value;
-                // Size was already decremented in getRemMinR indirectly if successful
-                size--;
+                size--; // update size after removal
             }
         }
 
-        // Balance the current node (or the node that replaced it) after removal/modification
-        // This needs to happen *after* the node is potentially replaced or modified
-        return balance(node); // Return the balanced node
+        return balance(node);
     }
 
 
@@ -401,7 +387,6 @@ public class BinaryTreeDictionary<K extends Comparable<? super K>, V> implements
         return level == 0 ? "" : "  ".repeat(Math.max(0, level - 1)) + "|__";
     }
 
-    // --- Iterator ---
 
     // Finds the leftmost node in the subtree rooted at p
     private Node<K, V> leftmost(Node<K, V> p) {
