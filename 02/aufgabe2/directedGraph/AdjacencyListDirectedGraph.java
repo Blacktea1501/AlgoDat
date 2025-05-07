@@ -30,59 +30,74 @@ public class AdjacencyListDirectedGraph<V extends Comparable<? super V>> impleme
 
     private int numberEdge = 0;
 
-	static class Vertex implements Comparable<Vertex>{
-		int id;
-
-		public Vertex(int id) {
-			this.id = id;
-		}
-
-		// compareTo
-		@Override
-		public int compareTo(Vertex o) {
-			return Integer.compare(id, o.id);
-		}
-	}
-
 	@Override
 	public boolean addVertex(V v) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		if(succ.containsKey(v)) {
+			return false;
+		}
+
+		succ.put(v, new TreeMap<>());
+		pred.put(v, new TreeMap<>());
+		return true;
     }
 
     @Override
     public boolean addEdge(V v, V w, double weight) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		addVertex(v);
+		addVertex(w);
+
+		Map<V, Double> vSucc = succ.get(v);
+		boolean edgeExisted = vSucc.containsKey(w);
+
+		vSucc.put(w, weight);
+		pred.get(w).put(v, weight);
+
+		if(!edgeExisted) {
+			numberEdge++;
+			return true;
+		}
+
+		return false;
     }
 
     @Override
     public boolean addEdge(V v, V w) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		return addEdge(v, w, 1.0);
     }
 
     @Override
     public boolean containsVertex(V v) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		return succ.containsKey(v);
     }
 
     @Override
     public boolean containsEdge(V v, V w) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		return succ.containsKey(v) && succ.get(v).containsKey(w);
     }
 
     @Override
     public double getWeight(V v, V w) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		if (!containsEdge(v, w)) {
+			throw new IllegalArgumentException("Edge does not exist: " + v + " -> " + w);
+		}
+		return succ.get(v).get(w);
     }
 
 	
     @Override
     public int getInDegree(V v) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		if(!containsVertex(v)) {
+			throw new IllegalArgumentException("Vertex does not exist: " + v);
+		}
+		return pred.get(v).size();
     }
 
     @Override
     public int getOutDegree(V v) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		if(!containsVertex(v)) {
+			throw new IllegalArgumentException("Vertex does not exist: " + v);
+		}
+		return succ.get(v).size();
     }
 	
 	@Override
@@ -92,35 +107,78 @@ public class AdjacencyListDirectedGraph<V extends Comparable<? super V>> impleme
 
     @Override
     public Set<V> getPredecessorVertexSet(V v) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		if(!containsVertex(v)) {
+			throw new IllegalArgumentException("Vertex does not exist: " + v);
+		}
+		return Collections.unmodifiableSet(pred.get(v).keySet());
     }
 
     @Override
     public Set<V> getSuccessorVertexSet(V v) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		if(!containsVertex(v)) {
+			throw new IllegalArgumentException("Vertex does not exist: " + v);
+		}
+		return Collections.unmodifiableSet(succ.get(v).keySet());
     }
 
     @Override
     public int getNumberOfVertexes() {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		return succ.size();
     }
 
     @Override
     public int getNumberOfEdges() {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		return numberEdge;
     }
 	
 	@Override
     public 
 	DirectedGraph<V> invert() {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		AdjacencyListDirectedGraph<V> invertedGraph = new AdjacencyListDirectedGraph<>();
+		for(V v : this.getVertexSet()) {
+			invertedGraph.addVertex(v); // Stellt sicher, dass alle Knoten im invertierten Graphen vorhanden sind
+		}
+
+		for (Map.Entry<V, Map<V, Double>> entry : succ.entrySet()) {
+			V u = entry.getKey();
+			for (Map.Entry<V, Double> edge : entry.getValue().entrySet()) {
+				V vSucc = edge.getKey();
+				double weight = edge.getValue();
+				invertedGraph.addEdge(vSucc, u, weight); // Invertiere die Kante
+			}
+		}
+
+		return invertedGraph;
 	}
 
 	
 	@Override
 	public String toString() {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		StringBuilder sb = new StringBuilder();
+		for (Map.Entry<V, Map<V, Double>> entry : succ.entrySet()) {
+			V v = entry.getKey();
+			Map<V, Double> edges = entry.getValue();
+			if (edges.isEmpty() && !pred.get(v).isEmpty()) {
+				sb.append(v).append(" -->\n");
+			}else {
+				for (Map.Entry<V, Double> edge : edges.entrySet()) {
+					V w = edge.getKey();
+					double weight = edge.getValue();
+					sb.append(v).append(" --> ").append(w).append(" weight = ").append(weight).append("\n");
+				}
+			}
+		}
+
+		// Knoten hinzufügen, die keine ausgehenden Kanten haben, aber im Graphen sind
+		for (V v: succ.keySet()) {
+			if (succ.get(v).isEmpty() && pred.get(v).isEmpty() && sb.indexOf(v.toString() + " -->") == -1){
+				sb.append(v).append(" -->\n");
+			}
+		}
+
+		return sb.toString();
 	}
+
 	
 	
 	public static void main(String[] args) {
@@ -145,20 +203,20 @@ public class AdjacencyListDirectedGraph<V extends Comparable<? super V>> impleme
 			// 3 --> 7 weight = 1.0
 			// ...
 		
-		System.out.println("");
+		System.out.println();
 		System.out.println(g.getOutDegree(2));				// 2
 		System.out.println(g.getSuccessorVertexSet(2));	// 5, 6
 		System.out.println(g.getInDegree(6));				// 2
 		System.out.println(g.getPredecessorVertexSet(6));	// 2, 4
 		
-		System.out.println("");
+		System.out.println();
 		System.out.println(g.containsEdge(1,2));	// true
 		System.out.println(g.containsEdge(2,1));	// false
 		System.out.println(g.getWeight(1,2));	// 1.0	
 		g.addEdge(1, 2, 5.0);
 		System.out.println(g.getWeight(1,2));	// 5.0	
 		
-		System.out.println("");
+		System.out.println();
 		System.out.println(g.invert());
 			// 1 --> 5 weight = 1.0
 			// 2 --> 1 weight = 5.0
