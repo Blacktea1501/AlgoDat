@@ -2,9 +2,7 @@
 // 22.02.2017
 package directedGraph;
 
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Klasse für Tiefensuche.
@@ -19,6 +17,7 @@ public class DepthFirstOrder<V> {
     private final List<V> postOrder = new LinkedList<>();
     private final DirectedGraph<V> myGraph;
     private int numberOfDFTrees = 0;
+    private Set<V> visited;
 	// ...
 
     /**
@@ -28,8 +27,36 @@ public class DepthFirstOrder<V> {
      */
     public DepthFirstOrder(DirectedGraph<V> g) {
         myGraph = g;
-        // ...
+        visited = new HashSet<>();
+
+        // Durchlaufe alle Knoten des Graphen.
+        // Die Reihenfolge der Knoten wird durch getVertexSet() bestimmt.
+
+        for(V v : myGraph.getVertexSet()){
+            if(!visited.contains(v)){
+                dfs(v);
+                numberOfDFTrees++;
+            }
+        }
     }
+
+    /**
+     * Die eigentliche Tiefensuche.
+     * @param v Startknoten der aktuellen Suche.
+     */
+    private void dfs(V v){
+        visited.add(v);
+        preOrder.add(v);
+
+        for (V w : myGraph.getSuccessorVertexSet(v)) {
+            if (!visited.contains(w)){
+               dfs(w);
+            }
+        }
+        postOrder.add(v);
+    }
+
+
 
     /**
      * Liefert eine nicht modifizierbare Liste (unmodifiable view) mit einer
