@@ -1,12 +1,6 @@
 package directedGraph;
 
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
+import java.util.*;
 
 /**
  * Klasse für die Bestimmung aller strengen Zusammenhangskomponenten
@@ -25,7 +19,8 @@ public class StrongComponents<V> {
 	// Anzahl der Komponenten:
 	private int numberOfComp = 0;
 
-	// ...
+	private Set<V> visited;
+	private LinkedList<V> postOrder;
 
 
 	/**
@@ -34,7 +29,54 @@ public class StrongComponents<V> {
 	 * @param g gerichteter Graph.
 	 */
 	public StrongComponents(DirectedGraph<V> g) {
-		// ...
+		if (g == null){
+			throw new IllegalArgumentException("Graph can not be null.");
+		}
+
+		visited = new HashSet<>();
+		postOrder = new LinkedList<>();
+
+		for (V v : g.getVertexSet()) {
+			if(!visited.contains(v)) {
+				dfs(g, v);
+			}
+		}
+
+		DirectedGraph<V>gT = g.invert();
+
+		visited.clear();
+		numberOfComp = 0;
+
+		for (V v : postOrder) {
+			if (!visited.contains(v)){
+				Set<V> currentSCC = new TreeSet<>();
+				dfs2(gT, v, currentSCC);
+				if (!currentSCC.isEmpty()){
+					comp.put(numberOfComp, currentSCC);
+					numberOfComp++;
+				}
+			}
+		}
+	}
+
+	private void dfs(DirectedGraph<V> g, V u){
+		visited.add(u);
+		for (V v : g.getSuccessorVertexSet(u)) {
+			if (!visited.contains(v)) {
+				dfs(g, v);
+			}
+		}
+		postOrder.addFirst(u);
+	}
+
+	private void dfs2(DirectedGraph<V> g, V u, Set<V> currentSCC){
+		visited.add(u);
+		currentSCC.add(u);
+		for (V v : g.getSuccessorVertexSet(u)) {
+			if (!visited.contains(v)) {
+				dfs2(g, v, currentSCC);
+			}
+		}
 	}
 
 
@@ -58,7 +100,29 @@ public class StrongComponents<V> {
 
 	@Override
 	public String toString() {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		if (comp.isEmpty() && numberOfComp > 0) { // Should not happen if logic is correct
+			return "No components found, but number of components is " + numberOfComp;
+		}
+		if (comp.isEmpty()) {
+			// Check if the graph was empty initially
+			// This requires access to the original graph's vertex set size,
+			// which is not stored. For now, assume if comp is empty, no SCCs were formed.
+			return "No strongly connected components found.";
+		}
+		StringBuilder sb = new StringBuilder();
+		for (Map.Entry<Integer, Set<V>> entry : comp.entrySet()) {
+			sb.append("Component ").append(entry.getKey()).append(": ");
+			boolean first = true;
+			for (V vertex : entry.getValue()) { // TreeSet sorgt für sortierte Ausgabe der Knoten
+				if (!first) {
+					sb.append(", ");
+				}
+				sb.append(vertex);
+				first = false;
+			}
+			sb.append("\n");
+		}
+		return sb.toString().trim();
 	}
 	
 		
