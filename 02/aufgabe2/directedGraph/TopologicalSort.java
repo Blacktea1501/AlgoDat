@@ -4,12 +4,7 @@
 package directedGraph;
 
 import java.security.cert.CollectionCertStoreParameters;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
+import java.util.*;
 
 /**
  * Klasse zur Erstellung einer topologischen Sortierung.
@@ -19,14 +14,51 @@ import java.util.Queue;
  */
 public class TopologicalSort<V> {
     private List<V> ts = new LinkedList<>(); // topologisch sortierte Folge
+	private boolean hasCycle = false; // Flag zur Zykluserkennung
+
+	private Set<V> visited;
+	private Set<V> onStack;
 
 	/**
 	 * Führt eine topologische Sortierung für g mit Tiefensuche durch.
 	 * @param g gerichteter Graph.
 	 */
 	public TopologicalSort(DirectedGraph<V> g) {
-        // ...
+		visited = new HashSet<>();
+		onStack = new HashSet<>();
+
+		for (V v : g.getVertexSet()) {
+			if (!visited.contains(v)) {
+				dfs(g, v);
+			}
+		}
+
+		if (hasCycle) {
+			ts.clear();
+		}
     }
+
+	private void dfs(DirectedGraph<V> g, V u){
+		visited.add(u);
+		onStack.add(u);
+
+
+		for (V v : g.getSuccessorVertexSet(u)) {
+			if (hasCycle) {
+				return; // Zyklus bereits gefunden, Abbruch
+			}
+			if (!visited.contains(v)) {
+				dfs(g, v);
+			} else if (onStack.contains(v)) {
+				// Rückwärtskante gefunden, Graph hat einen Zyklus
+				hasCycle = true;
+				return;
+			}
+		}
+
+		onStack.remove(u); // Knoten u verlässt den Rekursionsstack
+		ts.add(0, u);      // Füge u am Anfang der Liste hinzu (Post-Order-Verarbeitung)
+	}
     
 	/**
 	 * Liefert eine nicht modifizierbare Liste (unmodifiable view) zurück,
