@@ -107,7 +107,6 @@ public class AnalyzeWebSite {
 
         if (isSmallWebsite) {
             // Rank Table ausgeben (nur für data/WebSiteKlein):
-            // Ihr Code: ...
             System.out.println("\nPage Ranks (für kleine Webseite):");
             List<Map.Entry<V, Double>> sortedRankList = new ArrayList<>(rankTable.entrySet());
             if (!sortedRankList.isEmpty() && sortedRankList.get(0).getKey() instanceof Comparable) {
@@ -123,7 +122,6 @@ public class AnalyzeWebSite {
             }
         } else {
             // Nach Ranks sortieren Top 100 ausgeben (nur für data/WebSiteGross):
-            // Ihr Code: ...
             System.out.println("\nPage Ranks (für große Webseite):");
             List<Map.Entry<V, Double>> sortedRankList = new ArrayList<>(rankTable.entrySet());
             sortedRankList.sort(Map.Entry.<V, Double>comparingByValue().reversed());
@@ -135,7 +133,6 @@ public class AnalyzeWebSite {
             }
 
             // Top-Seite mit ihren Vorgängern und Ranks ausgeben (nur für data/WebSiteGross):
-            // Ihr Code: ...
             if (!sortedRankList.isEmpty()) {
                 Map.Entry<V, Double> topEntry = sortedRankList.get(0);
                 V topPage = topEntry.getKey();
@@ -156,12 +153,6 @@ public class AnalyzeWebSite {
                     }
                 }
             }
-
-
-            // Nach Ranks sortieren Top 100 ausgeben (nur für data/WebSiteGross):
-
-            // Top-Seite mit ihren Vorgängern und Ranks ausgeben (nur für data/WebSiteGross):
-
         }
     }
 }
