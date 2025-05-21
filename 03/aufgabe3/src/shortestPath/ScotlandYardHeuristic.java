@@ -81,6 +81,6 @@ public class ScotlandYardHeuristic implements Heuristic<Integer> {
         double dy = p1.y - p2.y;
         double distance = Math.sqrt(dx * dx + dy * dy);
 
-        return distance * 0.05; // Skalierungsfaktor
+        return distance * 0.02; // Skalierungsfaktor
     }
 }
