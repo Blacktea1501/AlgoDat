@@ -26,6 +26,7 @@ public class ScotlandYard {
 	private static UndirectedGraph<Integer> syGraph; // Scotland Spielplan als Graph
 	private static SYSimulation sim; // Scotland Yard Simulator
 	private static ShortestPath<Integer> sySpAStar; // A*
+    private static boolean streik = false;
 	static {
 		try {
 			syGraph = getGraph();
@@ -57,7 +58,7 @@ public class ScotlandYard {
   		shortestPath(1, 175, 25.0);
  		shortestPath(1, 173, 22.0);
 
-		shortestPathWithSimulation(1, 173, 22.0);
+		//shortestPathWithSimulation(1, 173, 22.0);
 	}
 
 	private static void shortestPath(Integer u, Integer v, Double dist) {
@@ -139,8 +140,10 @@ public class ScotlandYard {
 				g = 2;
 			else if (s.equals("Bus"))
 				g = 3;
-			else
+			else if(!streik)
 				g = 5;
+            else
+                g = 50;
 			
 			if (!sy_graph.containsEdge(u, v) || g < sy_graph.getWeight(u, v))
 				sy_graph.addEdge(u, v, g);
