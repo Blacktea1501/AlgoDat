@@ -58,7 +58,7 @@ public class ScotlandYard {
   		shortestPath(1, 175, 25.0);
  		shortestPath(1, 173, 22.0);
 
-		//shortestPathWithSimulation(1, 173, 22.0);
+		shortestPathWithSimulation(1, 173, 22.0);
 	}
 
 	private static void shortestPath(Integer u, Integer v, Double dist) {
