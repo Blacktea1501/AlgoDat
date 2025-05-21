@@ -8,6 +8,7 @@ import undirectedGraph.*;
 import sim.SYSimulation;
 
 import java.util.*;
+import java.util.List;
 
 // ...
 
@@ -79,6 +80,7 @@ public class ShortestPath<V> {
 	public void searchShortestPath(V s, V g) {
 		// für später
 		// boolean isSimulation = this.sim != null; // true, wenn simulation aktiviert wurde
+
 		this.start = s;
 		this.goal = g;
 		boolean isAstar = heuristic != null; // true, wenn A*-Verfahren
@@ -104,6 +106,14 @@ public class ShortestPath<V> {
 		while (!cand.isEmpty()) {
 			V u = cand.removeMin(); // Knoten mit minimaler Distanz
 			System.out.println("Besuche " + u + " mit d = " + dist.get(u));
+
+			if (sim != null) {
+				try {
+					sim.visitStation((Integer) u, null); // Knoten animieren
+				} catch (ClassCastException e) {
+					System.err.println("Animationsfehler: Knotentyp ist kein Integer.");
+				}
+			}
 
 			if (u.equals(g)) {
 				return; // Ziel erreicht

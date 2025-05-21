@@ -25,7 +25,11 @@ public class Map extends JPanel {
 		size = new Dimension();
 		
 		// create a buffered image and copy image data from file to buffer
-		bimage = ImageIO.read(new File("data/london.jpg"));
+		File file = new File("data/london.jpg");
+		if (!file.exists()) {
+			file = new File("03/aufgabe3/data/london.jpg");
+		}
+		bimage = ImageIO.read(file);
 		g2d = bimage.createGraphics();
 		size.width = bimage.getWidth(null);
 		size.height = bimage.getHeight(null);

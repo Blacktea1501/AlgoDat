@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.TreeMap;
 
 /**
  * Klasse für Scotland Yard Heuristik.
@@ -32,8 +33,13 @@ public class ScotlandYardHeuristic implements Heuristic<Integer> {
      * von der Datei ScotlandYard_Knoten.txt in eine Map ein.
      */
     public ScotlandYardHeuristic() throws FileNotFoundException {
+        coord = new TreeMap<>(); // Map mit den Koordinaten der Knoten
         // Lese Koordinaten von ScotlandYard_Knoten.txt in eine Map.
+
         File inputFile = new File("data/ScotlandYard_Knoten.txt");
+        if (!inputFile.exists()) {
+            inputFile = new File("03/aufgabe3/data/ScotlandYard_Knoten.txt");
+        }
         Scanner scanner = null;
 
         try {

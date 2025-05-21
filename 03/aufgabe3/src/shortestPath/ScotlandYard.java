@@ -51,11 +51,11 @@ public class ScotlandYard {
 	 * @throws FileNotFoundException
 	 */
 	public static void main(String[] args) throws FileNotFoundException {
-		shortestPath(65, 157, 9.0);
-		shortestPath(7, 190, 24.0);
-		shortestPath(1, 17, 17.0);
-		shortestPath(1, 175, 25.0);
-		shortestPath(1, 173, 22.0);
+//		shortestPath(65, 157, 9.0);
+//		shortestPath(7, 190, 24.0);
+//		shortestPath(1, 17, 17.0);
+//		shortestPath(1, 175, 25.0);
+//		shortestPath(1, 173, 22.0);
 
 		shortestPathWithSimulation(1, 173, 22.0);
 	}
@@ -116,8 +116,15 @@ public class ScotlandYard {
 	 */
 	public static UndirectedGraph<Integer> getGraph() throws FileNotFoundException {
 
+		// print out currnet working directory
+
 		UndirectedGraph<Integer> sy_graph = new AdjacencyListUndirectedGraph<>();
-		Scanner in = new Scanner(new File("data/ScotlandYard_Kanten.txt"));
+
+		File f = new File("data/ScotlandYard_Kanten.txt");
+		if (!f.exists()) {
+			f = new File("03/aufgabe3/data/ScotlandYard_Kanten.txt");
+		}
+		Scanner in = new Scanner(f);
 
 		for (int v = 1; v <= 199; v++)
 			sy_graph.addVertex(v);
