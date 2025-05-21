@@ -51,11 +51,11 @@ public class ScotlandYard {
 	 * @throws FileNotFoundException
 	 */
 	public static void main(String[] args) throws FileNotFoundException {
-//		shortestPath(65, 157, 9.0);
-//		shortestPath(7, 190, 24.0);
-//		shortestPath(1, 17, 17.0);
-//		shortestPath(1, 175, 25.0);
-//		shortestPath(1, 173, 22.0);
+		shortestPath(65, 157, 9.0);
+		shortestPath(7, 190, 24.0);
+		shortestPath(1, 17, 17.0);
+  		shortestPath(1, 175, 25.0);
+ 		shortestPath(1, 173, 22.0);
 
 		shortestPathWithSimulation(1, 173, 22.0);
 	}

@@ -78,9 +78,6 @@ public class ShortestPath<V> {
 	 * @param g Zielknoten
 	 */
 	public void searchShortestPath(V s, V g) {
-		// für später
-		// boolean isSimulation = this.sim != null; // true, wenn simulation aktiviert wurde
-
 		this.start = s;
 		this.goal = g;
 		boolean isAstar = heuristic != null; // true, wenn A*-Verfahren
