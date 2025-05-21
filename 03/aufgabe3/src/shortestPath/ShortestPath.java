@@ -131,41 +131,47 @@ public class ShortestPath<V> {
 
 
 	public boolean aStar(V s, V g) {
-		dist.clear();
-		pred.clear();
+        dist.clear();
+        pred.clear();
+        cand.clear();
 
-		for (V v : graph.getVertexSet()) {
-			dist.put(v, Double.POSITIVE_INFINITY);
-			pred.put(v, null);
-		}
-		dist.put(s, 0.0);
-		cand.add(s, 0.0 + heuristic.estimatedCost(s, g));
+        // Initialisierung
+        for (V v : graph.getVertexSet()) {
+            dist.put(v, Double.POSITIVE_INFINITY);
+            pred.put(v, null);
+        }
+        dist.put(s, 0.0);
+        cand.add(s, heuristic.estimatedCost(s, g));  // f(s) = g(s)+h(s) = 0 + h(s)
 
-		while(!cand.isEmpty()){
-			V u = cand.removeMin();
-			if (u.equals(g)){
-				return true;
-			}
-			// für jeden adjazenten Knoten v von u
-			for (V v : graph.getNeighborSet(u)) {
-				double weightUV = graph.getWeight(u, v); // das ist die distanz von u nach v
-				double alternative = dist.get(u) + weightUV; // das ist die distanz von s nach v
+        while (!cand.isEmpty()) {
+            V u = cand.removeMin();
+            System.out.println("Besuche " + u + " mit d = " + dist.get(u));
 
-				double estimatedCost = alternative + heuristic.estimatedCost(v, g); // heuristische Schätzung
+            if (u.equals(g)) {
+                return true;  // Ziel erreicht
+            }
 
-				if (dist.get(v) == Double.POSITIVE_INFINITY) {
-					cand.add(v, estimatedCost);
-				} else if (alternative < dist.get(v)){
-					dist.put(v, estimatedCost);
-					pred.put(v, u);
-					cand.change(v, estimatedCost);
-				}
-			}
+            for (V v : graph.getNeighborSet(u)) {
+                double weightUV = graph.getWeight(u, v);
+                double alternative = dist.get(u) + weightUV;
 
-		}
+                // Heuristische Gesamtkosten f = g + h
+                double estimatedCost = alternative + heuristic.estimatedCost(v, g);
 
-		return false;
-	}
+                if (dist.get(v) == Double.POSITIVE_INFINITY) {
+                    dist.put(v, alternative);    // Wichtig: dist = g(v), also ohne heuristik
+                    pred.put(v, u);
+                    cand.add(v, estimatedCost);
+                } else if (alternative < dist.get(v)) {
+                    dist.put(v, alternative);
+                    pred.put(v, u);
+                    cand.change(v, estimatedCost);
+                }
+            }
+        }
+        return false;  // Kein Pfad gefunden
+    }
+
 
 	/**
 	 * Liefert einen kürzesten Weg von Startknoten s nach Zielknoten g.
