@@ -90,34 +90,45 @@ public class ShortestPath<V> {
 	}
 
 	public void dijkstra(V s, V g) {
-		dist.clear();
-		pred.clear();
+        dist.clear();
+        pred.clear();
+        cand.clear(); // Kandidatenliste leeren, falls Methode mehrmals aufgerufen wird
 
-		for (V v : graph.getVertexSet()) {
-			dist.put(v, Double.POSITIVE_INFINITY);
-			pred.put(v, null);
-		}
-		dist.put(s, 0.0);
-		cand.add(s, 0.0);
+        // Initialisierung
+        for (V v : graph.getVertexSet()) {
+            dist.put(v, Double.POSITIVE_INFINITY);
+            pred.put(v, null);
+        }
+        dist.put(s, 0.0);
+        cand.add(s, 0.0);
 
-		while (!cand.isEmpty()) {
-			V u = cand.removeMin(); // Knoten mit minimaler Distanz
+        // Hauptschleife
+        while (!cand.isEmpty()) {
+            V u = cand.removeMin(); // Knoten mit minimaler Distanz
+            System.out.println("Besuche " + u + " mit d = " + dist.get(u));
 
-			// für jeden adjazenten Knoten v von u
-			for (V v : graph.getNeighborSet(u)) {
-				double weightUV = graph.getWeight(u, v); // das ist die distanz von u nach v
-				double alternative = dist.get(u) + weightUV; // das ist die distanz von s nach v
+            if (u.equals(g)) {
+                return; // Ziel erreicht
+            }
 
-				if (dist.get(v) == Double.POSITIVE_INFINITY) {
-					cand.add(v, alternative);
-				} else if (alternative < dist.get(v)){
-					dist.put(v, alternative);
-					pred.put(v, u);
-					cand.change(v, alternative);
-				}
-			}
-		}
-	}
+            // Für jeden Nachbarn von u
+            for (V v : graph.getNeighborSet(u)) {
+                double weightUV = graph.getWeight(u, v);
+                double alternative = dist.get(u) + weightUV;
+
+                if (dist.get(v) == Double.POSITIVE_INFINITY) {
+                    dist.put(v, alternative);
+                    pred.put(v, u);
+                    cand.add(v, alternative);
+                } else if (alternative < dist.get(v)) {
+                    dist.put(v, alternative);
+                    pred.put(v, u);
+                    cand.change(v, alternative);
+                }
+            }
+        }
+    }
+
 
 	public boolean aStar(V s, V g) {
 		dist.clear();
