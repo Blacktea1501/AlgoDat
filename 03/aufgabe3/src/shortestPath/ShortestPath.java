@@ -81,96 +81,57 @@ public class ShortestPath<V> {
 		// boolean isSimulation = this.sim != null; // true, wenn simulation aktiviert wurde
 		this.start = s;
 		this.goal = g;
+		boolean isAstar = heuristic != null; // true, wenn A*-Verfahren
 
-		if (this.heuristic == null){
-			dijkstra(s, g);
+
+		dist.clear();
+		pred.clear();
+		cand.clear(); // Kandidatenliste leeren, falls Methode mehrmals aufgerufen wird
+
+		// Initialisierung
+		for (V v : graph.getVertexSet()) {
+			dist.put(v, Double.POSITIVE_INFINITY);
+			pred.put(v, null);
+		}
+		dist.put(s, 0.0);
+		if (isAstar) {
+			cand.add(s, heuristic.estimatedCost(s, g));  // f(s) = g(s)+h(s) = 0 + h(s)
 		} else {
-			aStar(s, g);
+			cand.add(s, 0.0);
+		}
+
+		// Hauptschleife
+		while (!cand.isEmpty()) {
+			V u = cand.removeMin(); // Knoten mit minimaler Distanz
+			System.out.println("Besuche " + u + " mit d = " + dist.get(u));
+
+			if (u.equals(g)) {
+				return; // Ziel erreicht
+			}
+
+			// Für jeden Nachbarn von u
+			for (V v : graph.getNeighborSet(u)) {
+				double weightUV = graph.getWeight(u, v);
+				double alternative = dist.get(u) + weightUV;
+				double estimatedCost = alternative;
+
+				if (isAstar){
+					estimatedCost = alternative + heuristic.estimatedCost(v, g);
+				}
+
+				if (dist.get(v) == Double.POSITIVE_INFINITY) {
+					dist.put(v, alternative);    // Wichtig: dist = g(v), also ohne heuristik
+					pred.put(v, u);
+					cand.add(v, estimatedCost);
+				} else if (alternative < dist.get(v)) {
+					dist.put(v, alternative);
+					pred.put(v, u);
+					cand.change(v, estimatedCost);
+				}
+			}
 		}
 	}
 
-	public void dijkstra(V s, V g) {
-        dist.clear();
-        pred.clear();
-        cand.clear(); // Kandidatenliste leeren, falls Methode mehrmals aufgerufen wird
-
-        // Initialisierung
-        for (V v : graph.getVertexSet()) {
-            dist.put(v, Double.POSITIVE_INFINITY);
-            pred.put(v, null);
-        }
-        dist.put(s, 0.0);
-        cand.add(s, 0.0);
-
-        // Hauptschleife
-        while (!cand.isEmpty()) {
-            V u = cand.removeMin(); // Knoten mit minimaler Distanz
-            System.out.println("Besuche " + u + " mit d = " + dist.get(u));
-
-            if (u.equals(g)) {
-                return; // Ziel erreicht
-            }
-
-            // Für jeden Nachbarn von u
-            for (V v : graph.getNeighborSet(u)) {
-                double weightUV = graph.getWeight(u, v);
-                double alternative = dist.get(u) + weightUV;
-
-                if (dist.get(v) == Double.POSITIVE_INFINITY) {
-                    dist.put(v, alternative);
-                    pred.put(v, u);
-                    cand.add(v, alternative);
-                } else if (alternative < dist.get(v)) {
-                    dist.put(v, alternative);
-                    pred.put(v, u);
-                    cand.change(v, alternative);
-                }
-            }
-        }
-    }
-
-
-	public boolean aStar(V s, V g) {
-        dist.clear();
-        pred.clear();
-        cand.clear();
-
-        // Initialisierung
-        for (V v : graph.getVertexSet()) {
-            dist.put(v, Double.POSITIVE_INFINITY);
-            pred.put(v, null);
-        }
-        dist.put(s, 0.0);
-        cand.add(s, heuristic.estimatedCost(s, g));  // f(s) = g(s)+h(s) = 0 + h(s)
-
-        while (!cand.isEmpty()) {
-            V u = cand.removeMin();
-            System.out.println("Besuche " + u + " mit d = " + dist.get(u));
-
-            if (u.equals(g)) {
-                return true;  // Ziel erreicht
-            }
-
-            for (V v : graph.getNeighborSet(u)) {
-                double weightUV = graph.getWeight(u, v);
-                double alternative = dist.get(u) + weightUV;
-
-                // Heuristische Gesamtkosten f = g + h
-                double estimatedCost = alternative + heuristic.estimatedCost(v, g);
-
-                if (dist.get(v) == Double.POSITIVE_INFINITY) {
-                    dist.put(v, alternative);    // Wichtig: dist = g(v), also ohne heuristik
-                    pred.put(v, u);
-                    cand.add(v, estimatedCost);
-                } else if (alternative < dist.get(v)) {
-                    dist.put(v, alternative);
-                    pred.put(v, u);
-                    cand.change(v, estimatedCost);
-                }
-            }
-        }
-        return false;  // Kein Pfad gefunden
-    }
 
 
 	/**
