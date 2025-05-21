@@ -84,6 +84,7 @@ public class ScotlandYard {
 			a = b;
 		}
 		sim.stopSequence();
+        System.out.println("_------------------------------------------------------------------------------------");
 
 		// A* mit Animation
 		sySpAStar.setSimulator(sim);

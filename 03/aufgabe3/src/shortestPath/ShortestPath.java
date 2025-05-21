@@ -6,7 +6,7 @@ package shortestPath;
 
 import undirectedGraph.*;
 import sim.SYSimulation;
-
+import java.awt.Color;
 import java.util.*;
 import java.util.List;
 
@@ -109,7 +109,7 @@ public class ShortestPath<V> {
 
 			if (sim != null) {
 				try {
-					sim.visitStation((Integer) u, null); // Knoten animieren
+					sim.visitStation((Integer) u, Color.BLUE); // Knoten animieren
 				} catch (ClassCastException e) {
 					System.err.println("Animationsfehler: Knotentyp ist kein Integer.");
 				}
