@@ -98,10 +98,10 @@ public class TelNet {
             StdDraw.setPenRadius(0.005);
             StdDraw.setPenColor(StdDraw.RED);
             for (TelVerbindung v : this.verbindungListe) {
-                TelKnoten k1 = v.v(); // Annahme: TelVerbindung.getKnoten1()
-                TelKnoten k2 = v.u(); // Annahme: TelVerbindung.getKnoten2()
-                // Annahme: TelKnoten hat getX() und getY()
-                StdDraw.line(k1.x(), k1.y(), k2.x(), k2.y());
+                TelKnoten k1 = v.v();
+                TelKnoten k2 = v.u();
+                StdDraw.line(k1.x(), k1.y(), k2.x(), k1.y());
+                StdDraw.line(k2.x(), k1.y(), k2.x(), k2.y());
             }
         }
         StdDraw.show();
