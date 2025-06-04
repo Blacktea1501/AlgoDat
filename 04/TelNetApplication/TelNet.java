@@ -1,6 +1,7 @@
 package TelNetApplication;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 public class TelNet {
 
@@ -199,13 +200,19 @@ public class TelNet {
 
         telNet.drawOptTelNet(7, 7);
 
-        TelNet randomstuff = new TelNet(100);
-        randomstuff.generateRandomTelNet(1000,1000,1000);
-        randomstuff.computeOptTelNet();
+        try {
+            TimeUnit.SECONDS.sleep(5); // Sleep for 5 seconds
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
 
-        System.out.println(randomstuff);
+        TelNet radmon1000 = new TelNet(100);
+        radmon1000.generateRandomTelNet(1000,1000,1000);
+        radmon1000.computeOptTelNet();
 
-        randomstuff.drawOptTelNet(1000, 1000);
+        System.out.println(radmon1000);
+
+        radmon1000.drawOptTelNet(1000, 1000);
     }
 
 }
