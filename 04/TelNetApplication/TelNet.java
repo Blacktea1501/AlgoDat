@@ -2,6 +2,7 @@ package TelNetApplication;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.Scanner;
 
 public class TelNet {
 
@@ -200,11 +201,11 @@ public class TelNet {
 
         telNet.drawOptTelNet(7, 7);
 
-        try {
-            TimeUnit.SECONDS.sleep(5); // Sleep for 5 seconds
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Press Enter to continue...");
+        scanner.nextLine(); // Wait for user input
+        System.out.println("Continuing the program...");
+        scanner.close();
 
         TelNet radmon1000 = new TelNet(100);
         radmon1000.generateRandomTelNet(1000,1000,1000);
