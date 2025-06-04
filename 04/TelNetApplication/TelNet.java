@@ -197,6 +197,14 @@ public class TelNet {
         System.out.println(telNet);
 
         telNet.drawOptTelNet(7, 7);
+
+        TelNet randomstuff = new TelNet(100);
+        randomstuff.generateRandomTelNet(1000,1000,1000);
+        randomstuff.computeOptTelNet();
+
+        System.out.println(randomstuff);
+
+        randomstuff.drawOptTelNet(1000, 1000);
     }
 
 }
