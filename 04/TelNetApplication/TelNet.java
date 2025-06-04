@@ -79,13 +79,7 @@ public class TelNet {
     // Using ../StdDraw.java for drawing
     void drawOptTelNet(int xMax, int yMax){
         if (this.verbindungListe == null) {
-            System.out.println("Optimales Netz (MST) wurde noch nicht erfolgreich berechnet oder ist nicht vorhanden.");
-            System.out.println("Bitte zuerst computeOptTelNet() aufrufen und sicherstellen, dass es 'true' zurückgibt.");
-            // Zeichne nur die Knoten, wenn kein MST vorhanden ist
-            StdDraw.setCanvasSize(Math.max(512, xMax + 50), Math.max(512, yMax + 50));
-            StdDraw.setXscale(0, xMax);
-            StdDraw.setYscale(0, yMax);
-            StdDraw.clear(StdDraw.LIGHT_GRAY);
+            throw new IllegalStateException("Not computed yet. Call computeOptTelNet() first.");
         } else {
             StdDraw.setCanvasSize(Math.max(512, xMax + 50), Math.max(512, yMax + 50));
             StdDraw.setXscale(0, xMax);
@@ -93,7 +87,7 @@ public class TelNet {
             StdDraw.clear(StdDraw.LIGHT_GRAY);
             StdDraw.setPenRadius(0.005);
 
-            StdDraw.setPenColor(StdDraw.BLUE);
+            StdDraw.setPenColor(StdDraw.RED);
             for (TelVerbindung v : this.verbindungListe) {
                 TelKnoten k1 = v.v(); // Annahme: TelVerbindung.getKnoten1()
                 TelKnoten k2 = v.u(); // Annahme: TelVerbindung.getKnoten2()
@@ -102,7 +96,7 @@ public class TelNet {
             }
         }
         // Zeichne immer die Knoten
-        StdDraw.setPenColor(StdDraw.RED);
+        StdDraw.setPenColor(StdDraw.BLUE);
         StdDraw.setPenRadius(0.015);
         for (TelKnoten k : knotenListe) {
             StdDraw.point(k.x(), k.y());
@@ -191,12 +185,12 @@ public class TelNet {
         TelNet telNet = new TelNet(7);
 
         telNet.addTelKnoten(1, 1);
-        telNet.addTelKnoten(1, 3);
-        telNet.addTelKnoten(2, 4);
-        telNet.addTelKnoten(4, 3);
-        telNet.addTelKnoten(6, 2);
-        telNet.addTelKnoten(7, 4);
-        telNet.addTelKnoten(6, 7);
+        telNet.addTelKnoten(3, 1);
+        telNet.addTelKnoten(4, 2);
+        telNet.addTelKnoten(3, 4);
+        telNet.addTelKnoten(2, 6);
+        telNet.addTelKnoten(4, 7);
+        telNet.addTelKnoten(7, 6);
 
         telNet.computeOptTelNet();
 
