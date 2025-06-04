@@ -78,15 +78,22 @@ public class TelNet {
 
     // Using ../StdDraw.java for drawing
     void drawOptTelNet(int xMax, int yMax){
+        StdDraw.setCanvasSize(Math.max(512, xMax + 50), Math.max(512, yMax + 50));
+        StdDraw.setXscale(0, xMax);
+        StdDraw.setYscale(0, yMax);
+        StdDraw.clear(StdDraw.LIGHT_GRAY);
+        // Zeichne immer die Knoten
+        StdDraw.setPenColor(StdDraw.BLUE);
+        StdDraw.setPenRadius(0.015);
+        for (TelKnoten k : knotenListe) {
+            StdDraw.point(k.x(), k.y());
+        }
         if (this.verbindungListe == null) {
             throw new IllegalStateException("Not computed yet. Call computeOptTelNet() first.");
         } else {
-            StdDraw.setCanvasSize(Math.max(512, xMax + 50), Math.max(512, yMax + 50));
-            StdDraw.setXscale(0, xMax);
-            StdDraw.setYscale(0, yMax);
-            StdDraw.clear(StdDraw.LIGHT_GRAY);
+            
+        
             StdDraw.setPenRadius(0.005);
-
             StdDraw.setPenColor(StdDraw.RED);
             for (TelVerbindung v : this.verbindungListe) {
                 TelKnoten k1 = v.v(); // Annahme: TelVerbindung.getKnoten1()
@@ -95,12 +102,6 @@ public class TelNet {
                 StdDraw.line(k1.x(), k1.y(), k2.x(), k2.y());
             }
         }
-        // Zeichne immer die Knoten
-        StdDraw.setPenColor(StdDraw.BLUE);
-        StdDraw.setPenRadius(0.015);
-        for (TelKnoten k : knotenListe) {
-            StdDraw.point(k.x(), k.y());
-        }
         StdDraw.show();
 
     }
@@ -108,7 +109,7 @@ public class TelNet {
     void generateRandomTelNet(int n, int xMax, int yMax){
         this.knotenListe.clear();
         java.util.Random rand = new java.util.Random();
-        for(int i = 0; i < n; i++) {
+        for(int i = 0; i < n+1; i++) {
             int x = rand.nextInt(xMax + 1);
             int y = rand.nextInt(yMax + 1);
             addTelKnoten(x, y);
