@@ -188,53 +188,21 @@ public class TelNet {
     }
 
     public static void main(String[] args) {
-        TelNet meinNetz = new TelNet(150); // LBG = 150
+        TelNet telNet = new TelNet(7);
 
-        meinNetz.addTelKnoten(10, 10);
-        meinNetz.addTelKnoten(100, 10);
-        meinNetz.addTelKnoten(10, 100);
-        meinNetz.addTelKnoten(100, 100);
-        meinNetz.addTelKnoten(50, 50);
-        // meinNetz.addTelKnoten(300, 300); // Ein isolierter Knoten, wenn LBG=150 zu klein ist
+        telNet.addTelKnoten(1, 1);
+        telNet.addTelKnoten(1, 3);
+        telNet.addTelKnoten(2, 4);
+        telNet.addTelKnoten(4, 3);
+        telNet.addTelKnoten(6, 2);
+        telNet.addTelKnoten(7, 4);
+        telNet.addTelKnoten(6, 7);
 
-        System.out.println("--- Initiales Netz ---");
-        System.out.println(meinNetz);
+        telNet.computeOptTelNet();
 
-        System.out.println("\n--- Berechne optimales Netz ---");
-        boolean erfolg = meinNetz.computeOptTelNet();
-        System.out.println("Berechnung erfolgreich: " + erfolg);
-        System.out.println(meinNetz);
-        meinNetz.drawOptTelNet(200, 200);
+        System.out.println(telNet);
 
-        System.out.println("\n--- Test mit LBG, das Trennung erzwingt ---");
-        TelNet getrenntesNetz = new TelNet(50); // Sehr kleiner LBG
-        getrenntesNetz.addTelKnoten(0,0);
-        getrenntesNetz.addTelKnoten(10,0); // Abstand 10 <= 50
-        getrenntesNetz.addTelKnoten(100,100); // Abstand zu (0,0) ist ~141
-        getrenntesNetz.addTelKnoten(100,110); // Abstand 10 <= 50
-
-        erfolg = getrenntesNetz.computeOptTelNet();
-        System.out.println("Berechnung (getrenntesNetz) erfolgreich: " + erfolg); // Sollte false sein, wenn >1 Komponente
-        System.out.println(getrenntesNetz); // verbindungListe sollte null sein oder nur Teilbaum für (0,0)-(10,0) etc.
-        // Gemäß der Logik: verbindungListe bleibt null, da forest.size() != 1
-        getrenntesNetz.drawOptTelNet(120, 120);
-
-
-        System.out.println("\n--- Test mit einem Knoten ---");
-        TelNet einKnotenNetz = new TelNet(100);
-        einKnotenNetz.addTelKnoten(5,5);
-        erfolg = einKnotenNetz.computeOptTelNet();
-        System.out.println("Berechnung (ein Knoten) erfolgreich: " + erfolg); // Sollte true sein
-        System.out.println(einKnotenNetz);
-        einKnotenNetz.drawOptTelNet(20,20);
-
-        System.out.println("\n--- Test mit leerem Netz ---");
-        TelNet leeresNetz = new TelNet(100);
-        erfolg = leeresNetz.computeOptTelNet();
-        System.out.println("Berechnung (leeres Netz) erfolgreich: " + erfolg); // Sollte true sein
-        System.out.println(leeresNetz);
-        leeresNetz.drawOptTelNet(20,20);
-
+        telNet.drawOptTelNet(7, 7);
     }
 
 }
