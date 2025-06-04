@@ -3,6 +3,9 @@
 
 package TelNetApplication;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -19,6 +22,10 @@ import java.util.Set;
  */
 public class UnionFind<T> {
 	// ...
+	private Map<T,T> parent; // Repräsentant der Teilmenge
+	private Map<T, Integer> rank;
+	private int numSets;
+
 
 	/**
      * Legt eine neue Union-Find-Struktur mit allen 1-elementigen Teilmengen von s an.
@@ -26,19 +33,34 @@ public class UnionFind<T> {
 	 *
      */
 	public UnionFind(Set<T> s) {
-		// ...
+		parent = new HashMap<>();
+		rank = new HashMap<>();
+		for (T element : s) {
+			parent.put(element, element); // Jedes Element ist zunächst sein eigener Repräsentant
+			rank.put(element, 0); // Anfangsrang ist 0
+		}
+		numSets = s.size(); // Anzahl der Teilmengen ist die Größe der Menge s
 	}
 
 	/**
      * Liefert den Repräsentanten der Teilmenge zurück, zu der e gehört.
 	 * Pfadkompression wird angewendet.
      * @param e Element
-     * @throws IllegalArgumentException falls e nicht in der Partionierung vorkommt.
+     * @throws IllegalArgumentException falls e nicht in der Partitionierung vorkommt.
      * @return Repräsentant der Teilmenge, zu der e gehört.
      */
 	public T find(T e) {
-		return null;
-		// ...
+		if (!parent.containsKey(e)){
+			throw new IllegalArgumentException("Element " + e + " ist nicht Teil der Partitionierung.");
+		}
+
+		// Pfadkompression
+		if (!parent.get(e).equals(e)) {
+			// rekursiver aufruf, um den Repräsentanten zu finden
+			parent.put(e, find(parent.get(e)));
+		}
+
+		return parent.get(e);
 	}
 
 
@@ -52,16 +74,64 @@ public class UnionFind<T> {
 	 * @throws IllegalArgumentException falls e1 und e2 keine Elemente der Union-Find-Struktur sind.
      */
 	public void union(T e1, T e2) {
-		return;
-		// ...
+		T root1 = find(e1);
+		T root2 = find(e2);
+
+		if (!root1.equals(root2)){
+			int rank1 = rank.get(root1);
+			int rank2 = rank.get(root2);
+
+			if (rank1 < rank2) {
+				// root1 hat einen niedrigeren Rang, also wird root1 unter root2 eingereiht
+				parent.put(root1, root2);
+			} else if (rank1 > rank2) {
+				// root2 hat einen niedrigeren Rang, also wird root2 unter root1 eingereiht
+				parent.put(root2, root1);
+			} else {
+				// Beide Ränge sind gleich, wir können einen der beiden Repräsentanten wählen
+				parent.put(root2, root1);
+				rank.put(root1, rank1 + 1); // Erhöhe den Rang von root1
+			}
+			numSets--; // size wird verringert, da zwei Teilmengen vereinigt wurden
+		}
 	}
 
 	/**
 	 * Ausgabe der Union-Find-Struktur zu Testzwecken.
 	 */
 	public void print() {
-		return;
-		// ...
+		System.out.println("Status der Union-Find Struktur:");
+		System.out.println("Anzahl der disjunkten Mengen: " + numSets);
+
+		if (parent.isEmpty()) {
+			System.out.println("Die Struktur ist leer.");
+			return;
+		}
+
+		System.out.println("Element -> Parent (Rank):");
+		for (T elem : parent.keySet()) {
+			T p = parent.get(elem);
+			// Um den aktuellen (möglicherweise komprimierten) Parent und korrekten Rang des Repräsentanten anzuzeigen:
+			T representative = find(elem); // Ruft find auf, um Pfadkompression sicherzustellen
+			int currentRank = rank.get(representative); // Rang des Repräsentanten
+			System.out.println("  " + elem + " -> " + p + " (Rep: " + representative + ", Rank des Rep: " + currentRank + ")");
+		}
+
+		// Gruppieren der Elemente in ihre jeweiligen Mengen zur besseren Visualisierung
+		Map<T, Set<T>> sets = new HashMap<>();
+		for (T elem : parent.keySet()) {
+			T root = find(elem); // Stellt sicher, dass der Pfad komprimiert ist und wir den wahren Repräsentanten bekommen
+			sets.computeIfAbsent(root, k -> new HashSet<>()).add(elem);
+		}
+
+		System.out.println("Disjunkte Mengen:");
+		int setCount = 0;
+		for (Map.Entry<T, Set<T>> entry : sets.entrySet()) {
+			setCount++;
+			System.out.println("  Menge " + setCount + " (Repräsentant: " + entry.getKey() + "): " + entry.getValue());
+		}
+		System.out.println("------------------------------------");
+
 	}
 
 	/**
@@ -69,8 +139,7 @@ public class UnionFind<T> {
 	 * @return Anzahl der Teilmengen.
 	 */
 	public int size() {
-		// not implemented
-		return 0; // Placeholder, implement as needed
+		return numSets;
 	}
 
     public static void main(String[] args) {
@@ -82,7 +151,7 @@ public class UnionFind<T> {
 		uf.print();
 		uf.union(2,4);
 		uf.print();
-		uf.find(4);
+		System.out.println("find(4): " + uf.find(4));
 		uf.print();
 		uf.union(9,10);
 		uf.union(7,8);
@@ -91,7 +160,7 @@ public class UnionFind<T> {
 		uf.print();
 		uf.union(1,7);
 		uf.print();
-		uf.find(10);
+		System.out.println("find(10): " + uf.find(10));
 		uf.print();
 	}
 }
