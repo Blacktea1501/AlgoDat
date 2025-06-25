@@ -10,6 +10,8 @@ public class FloydTest {
     }
 
     public static void example1() {
+        System.out.println("------------------------------------------");
+        System.out.println("EXAMLPE I");
         DirectedGraph<Integer> g = GraphExamples.smallGraphExample();
         Floyd<Integer> floyd = new Floyd<>(g);
         floyd.print();
@@ -24,12 +26,16 @@ public class FloydTest {
     }
 
     public static void example2() {
+        System.out.println("------------------------------------------");
+        System.out.println("EXAMLPE II");
         DirectedGraph<Integer> g = GraphExamples.smallGraphExample();
         g.addEdge(1, 2, -2); // negative cycle
         Floyd<Integer> floyd = new Floyd<>(g);
     }
 
     public static void example3() {
+        System.out.println("------------------------------------------");
+        System.out.println("EXAMLPE III");
         DirectedGraph<String> g = GraphExamples.allgaeuGraphExample();
         Floyd<String> floyd = new Floyd<>(g);
 
@@ -46,6 +52,8 @@ public class FloydTest {
     }
 
     public static void example4() {
+        System.out.println("------------------------------------------");
+        System.out.println("EXAMLPE IV");
         // Ermittelte die 5 relevantesten Städte mit der Anzahl der kürzesten Wege, die durch sie führen
         DirectedGraph<String> g = GraphExamples.allgaeuGraphExample();
         Floyd<String> floyd = new Floyd<>(g);
