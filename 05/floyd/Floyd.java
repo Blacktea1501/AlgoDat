@@ -49,7 +49,8 @@ public class Floyd<V> {
         // Prüfe auf negative Zyklen
         for (V v : nodes) {
             if (dist.get(v).get(v) < 0) {
-                throw new IllegalArgumentException("Negativer Zyklus im Graphen bei Knoten " + v);
+                //throw new IllegalArgumentException("Negativer Zyklus im Graphen bei Knoten " + v);
+                System.out.println("Negativer Zyklus im Graphen bei Knoten " + v);
             }
         }
     }
